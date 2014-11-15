@@ -29,9 +29,7 @@ public:
 
 private slots:
     void on_pushButton_clicked();
-    void on_treeWidgetActivity_itemSelectionChanged();
-    void on_treeWidgetWork_itemSelectionChanged();
-    void on_treeWidgetLocation_itemSelectionChanged();
+    void on_itemSelectionChanged();
     void on_pushButtonClear_clicked();
     void on_spinBox_editingFinished();
     void on_comboBoxWork_currentIndexChanged(const QString &arg1);

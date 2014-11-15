@@ -11,6 +11,13 @@ ACGTagGenerator::ACGTagGenerator(QWidget *parent) :
     ui->setupUi(this);
     ui->pushButton->hide();
     Initialize();
+
+    connect(ui->treeWidgetActivity, SIGNAL(itemSelectionChanged()),
+            this, SLOT(on_itemSelectionChanged()));
+    connect(ui->treeWidgetLocation, SIGNAL(itemSelectionChanged()),
+            this, SLOT(on_itemSelectionChanged()));
+    connect(ui->treeWidgetWork, SIGNAL(itemSelectionChanged()),
+            this, SLOT(on_itemSelectionChanged()));
 }
 
 ACGTagGenerator::~ACGTagGenerator()
@@ -260,17 +267,7 @@ void ACGTagGenerator::on_pushButton_clicked()
     ui->plainTextEdit->setPlainText(output);
 }
 
-void ACGTagGenerator::on_treeWidgetActivity_itemSelectionChanged()
-{
-    on_pushButton_clicked();
-}
-
-void ACGTagGenerator::on_treeWidgetWork_itemSelectionChanged()
-{
-    on_pushButton_clicked();
-}
-
-void ACGTagGenerator::on_treeWidgetLocation_itemSelectionChanged()
+void ACGTagGenerator::on_itemSelectionChanged()
 {
     on_pushButton_clicked();
 }
