@@ -9,6 +9,7 @@ ACGTagGenerator::ACGTagGenerator(QWidget *parent) :
     ui(new Ui::ACGTagGenerator)
 {
     ui->setupUi(this);
+    ui->pushButton->hide();
     Initialize();
 }
 
@@ -118,7 +119,7 @@ void ACGTagGenerator::findTargetNode(QDomDocument &dom, const QString &tag, cons
             continue;
 
         for (int j = 0; j < names.count(); j++) {
-            qDebug() << names.item(j).toElement().text();
+            //qDebug() << names.item(j).toElement().text();
             if (names.item(j).toElement().text() == targetTag) {
                 targetNode = names.item(j);
                 return;
@@ -134,7 +135,10 @@ void ACGTagGenerator::traverseParent(QDomNode &targetNode, QString &output)
         QDomNodeList children = parent.childNodes();
         for (int i = 0; i < children.count(); i++) {
             if (children.item(i).toElement().tagName() == "name") {
-                output.append("\"" + children.item(i).toElement().text() + "\" ");
+                output.append("\"" + children.item(i).toElement().text());
+                if (parent.toElement().tagName() == "activity" && ui->spinBox->value() > -1)
+                    output.append(QString("%1").arg(ui->spinBox->value()));
+                output.append("\" ");
             }
         }
         parent = parent.parentNode();
@@ -177,4 +181,30 @@ void ACGTagGenerator::on_pushButton_clicked()
         output.append("\"" + m_commonTagList[i] + "\" ");
     }
     ui->plainTextEdit->setPlainText(output);
+}
+
+void ACGTagGenerator::on_treeWidgetActivity_itemSelectionChanged()
+{
+    on_pushButton_clicked();
+}
+
+void ACGTagGenerator::on_treeWidgetWork_itemSelectionChanged()
+{
+    on_pushButton_clicked();
+}
+
+void ACGTagGenerator::on_treeWidgetLocation_itemSelectionChanged()
+{
+    on_pushButton_clicked();
+}
+
+void ACGTagGenerator::on_pushButtonClear_clicked()
+{
+    ui->plainTextEdit->clear();
+}
+
+void ACGTagGenerator::on_spinBox_editingFinished()
+{
+    if (NULL != ui->treeWidgetActivity->currentItem())
+        on_pushButton_clicked();
 }

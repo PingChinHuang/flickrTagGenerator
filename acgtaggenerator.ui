@@ -50,9 +50,9 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>610</y>
+     <y>580</y>
      <width>531</width>
-     <height>91</height>
+     <height>121</height>
     </rect>
    </property>
    <property name="title">
@@ -64,24 +64,57 @@
       <x>10</x>
       <y>10</y>
       <width>511</width>
-      <height>73</height>
+      <height>104</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QPlainTextEdit" name="plainTextEdit"/>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>場次號</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="spinBox">
+         <property name="minimum">
+          <number>-1</number>
+         </property>
+         <property name="value">
+          <number>-1</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
        <item>
         <widget class="QPushButton" name="pushButton">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
          <property name="text">
           <string>Generate</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="pushButtonClear">
          <property name="text">
           <string>Clear</string>
          </property>
@@ -143,6 +176,9 @@
     </item>
    </layout>
   </widget>
+  <zorder>groupBox</zorder>
+  <zorder>layoutWidget</zorder>
+  <zorder>treeWidgetWork</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
