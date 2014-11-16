@@ -3,6 +3,7 @@
 
 #include <QFile>
 #include <QDebug>
+#include <QFileDialog>
 
 ACGTagGenerator::ACGTagGenerator(QWidget *parent) :
     QWidget(parent),
@@ -10,7 +11,7 @@ ACGTagGenerator::ACGTagGenerator(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->pushButton->hide();
-    Initialize();
+    //Initialize();
 
     connect(ui->treeWidgetActivity, SIGNAL(itemSelectionChanged()),
             this, SLOT(on_itemSelectionChanged()));
@@ -28,7 +29,7 @@ ACGTagGenerator::~ACGTagGenerator()
 
 void ACGTagGenerator::Initialize()
 {
-    QFile *file = new QFile("F:/Qt/Qt5.2.1/User/Audi/build-ACGTagGenerator-Desktop_Qt_5_2_1_MinGW_32bit-Debug/debug/acgtag.xml");
+    QFile *file = new QFile(m_TagXmlFileName);
     if (file->open(QIODevice::ReadOnly)) {
         m_dom.setContent(file);
     }
@@ -104,10 +105,6 @@ void ACGTagGenerator::InitializeWorksTagsTree()
         QDomNodeList works = worksTags.item(i).toElement().elementsByTagName("work");
         QTreeWidgetItem *item = NULL;
         for (int j = 0; j < works.count(); j++) {
-            //QDomNodeList workNames = works.item(j).toElement().elementsByTagName("name");
-            //if (workNames.count() < 1)
-            //    continue;
-
             QDomNodeList workChildren = works.item(j).childNodes();
             if (workChildren.count() < 1)
                 continue;
@@ -122,15 +119,11 @@ void ACGTagGenerator::InitializeWorksTagsTree()
                         bWorkNameFound = true;
                         break;
                     }
-
-                    //ui->comboBoxWorkName->addItem(workChildren.item(k).toElement().text());
                 }
             }
 
             if (!bWorkNameFound)
                 continue;
-            //item = new QTreeWidgetItem(QStringList(workNames.item(0).toElement().text()));
-            //ui->treeWidgetWork->addTopLevelItem(item);
 
             QDomNodeList characters = works.item(j).toElement().elementsByTagName("char");
             for (int k = 0; k < characters.count(); k++) {
@@ -377,7 +370,7 @@ void ACGTagGenerator::on_pushButtonApply_clicked()
             newWorksTags.appendChild(newWork);
     }
 
-    QFile *file = new QFile("F:/Qt/Qt5.2.1/User/Audi/build-ACGTagGenerator-Desktop_Qt_5_2_1_MinGW_32bit-Debug/debug/acgtag.xml");
+    QFile *file = new QFile(m_TagXmlFileName);
     if (file->open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream stream(file);
         stream.setCodec("UTF-8");
@@ -394,4 +387,10 @@ void ACGTagGenerator::on_comboBoxWork_currentTextChanged(const QString &arg1)
     if (!this->UpdateWorkCharComboBox())
         if (!arg1.isEmpty())
              ui->tableWidgetWork->setItem(0, 0, new QTableWidgetItem(arg1));
+}
+
+void ACGTagGenerator::on_pushButtonOpen_clicked()
+{
+    m_TagXmlFileName = QFileDialog::getOpenFileName(this, tr("Open Tag XML"), "./", tr("XML Files (*.xml *.XML);;All Files (*.*)"));
+    Initialize();
 }

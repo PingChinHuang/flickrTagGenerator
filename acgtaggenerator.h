@@ -20,6 +20,7 @@ private:
     Ui::ACGTagGenerator *ui;
     QStringList m_commonTagList;
     QDomDocument m_dom;
+    QString m_TagXmlFileName;
 
 public:
     void Initialize();
@@ -40,6 +41,7 @@ private slots:
     void on_comboBoxChar_currentTextChanged(const QString &arg1);
     void on_pushButtonApply_clicked();
     void on_comboBoxWork_currentTextChanged(const QString &arg1);
+    void on_pushButtonOpen_clicked();
 };
 
 #endif // ACGTAGGENERATOR_H

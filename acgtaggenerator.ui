@@ -104,6 +104,13 @@
         </spacer>
        </item>
        <item>
+        <widget class="QPushButton" name="pushButtonOpen">
+         <property name="text">
+          <string>Open</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="pushButton">
          <property name="enabled">
           <bool>true</bool>
@@ -207,7 +214,7 @@
      <string>Apply</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -459,11 +466,6 @@
   <zorder>groupBox</zorder>
   <zorder>layoutWidget</zorder>
   <zorder>treeWidgetWork</zorder>
-  <zorder>comboBoxWork</zorder>
-  <zorder>labelWork</zorder>
-  <zorder>layoutWidget_2</zorder>
-  <zorder>layoutWidget_3</zorder>
-  <zorder>layoutWidget_4</zorder>
   <zorder>groupBox_2</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
