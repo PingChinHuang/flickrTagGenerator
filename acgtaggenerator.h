@@ -23,17 +23,23 @@ private:
 
 public:
     void Initialize();
-    void UpdateWorkCharComboBox(bool bWork = true);
-    void findTargetNode(QDomDocument &dom, const QString &tag, const QString &targetTag, QDomNode &targetNode);
+    bool UpdateWorkCharComboBox(bool bWork = true);
+    bool findTargetNode(QDomDocument &dom, const QString &tag, const QString &targetTag, QDomNode &targetNode);
     void traverseParent(QDomNode &targetNode, QString &output);
+    bool createNewCharNode(QDomNode &newChar);
+    bool addWorkNameNode(QDomNode &targetNode);
+
+private:
+    void InitializeWorksTagsTree();
 
 private slots:
     void on_pushButton_clicked();
     void on_itemSelectionChanged();
     void on_pushButtonClear_clicked();
     void on_spinBox_editingFinished();
-    void on_comboBoxWork_currentIndexChanged(const QString &arg1);
     void on_comboBoxChar_currentTextChanged(const QString &arg1);
+    void on_pushButtonApply_clicked();
+    void on_comboBoxWork_currentTextChanged(const QString &arg1);
 };
 
 #endif // ACGTAGGENERATOR_H

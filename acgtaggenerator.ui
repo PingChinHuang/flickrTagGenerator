@@ -192,9 +192,12 @@
     <bool>true</bool>
    </property>
    <widget class="QPushButton" name="pushButtonApply">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>450</x>
+      <x>440</x>
       <y>320</y>
       <width>75</width>
       <height>23</height>
