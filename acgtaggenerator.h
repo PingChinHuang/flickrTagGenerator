@@ -32,6 +32,7 @@ public:
 
 private:
     void InitializeWorksTagsTree();
+    void clearCurrentDom();
 
 private slots:
     void on_pushButton_clicked();

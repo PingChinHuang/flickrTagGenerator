@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ACGTagGenerator</string>
+   <string>Flickr-style Tag Generator</string>
   </property>
   <widget class="QTreeWidget" name="treeWidgetWork">
    <property name="geometry">

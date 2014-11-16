@@ -11,6 +11,7 @@ ACGTagGenerator::ACGTagGenerator(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->pushButton->hide();
+    setWindowFlags(Qt::MSWindowsFixedSizeDialogHint);
     //Initialize();
 
     connect(ui->treeWidgetActivity, SIGNAL(itemSelectionChanged()),
@@ -23,18 +24,32 @@ ACGTagGenerator::ACGTagGenerator(QWidget *parent) :
 
 ACGTagGenerator::~ACGTagGenerator()
 {
-    m_dom.clear();
+    clearCurrentDom();
     delete ui;
+}
+
+void ACGTagGenerator::clearCurrentDom()
+{
+    m_dom.clear();
+    if (QFile::exists(m_TagXmlFileName) && QFile::exists(m_TagXmlFileName + ".tmp"))
+    {
+        QFile::remove(m_TagXmlFileName);
+        QFile::rename(m_TagXmlFileName + ".tmp", m_TagXmlFileName);
+    }
 }
 
 void ACGTagGenerator::Initialize()
 {
+    if (m_TagXmlFileName.isEmpty())
+        return;
+
     QFile *file = new QFile(m_TagXmlFileName);
-    if (file->open(QIODevice::ReadOnly)) {
+    if (file->open(QIODevice::ReadOnly | QIODevice::Text)) {
         m_dom.setContent(file);
     }
     file->close();
 
+    ui->treeWidgetCommon->clear();
     QDomNodeList commonTags = m_dom.elementsByTagName("CommonTags");
     for (int i = 0; i < commonTags.count(); i++) {
         QDomNodeList commonTagsItems = commonTags.item(i).toElement().childNodes();
@@ -46,6 +61,7 @@ void ACGTagGenerator::Initialize()
         }
     }
 
+    ui->treeWidgetLocation->clear();
     QDomNodeList locationTags = m_dom.elementsByTagName("LocationTags");
     for (int i = 0; i < locationTags.count(); i++) {
         QDomNodeList countries = locationTags.item(i).toElement().elementsByTagName("country");
@@ -79,6 +95,7 @@ void ACGTagGenerator::Initialize()
         }
     }
 
+    ui->treeWidgetActivity->clear();
     QDomNodeList activitiesTags = m_dom.elementsByTagName("ActivitiesTags");
     for (int i = 0; i < activitiesTags.count(); i++) {
         QDomNodeList activities = activitiesTags.item(i).toElement().elementsByTagName("activity");
@@ -99,6 +116,7 @@ void ACGTagGenerator::Initialize()
 void ACGTagGenerator::InitializeWorksTagsTree()
 {
     ui->treeWidgetWork->clear();
+    ui->comboBoxWork->clear();
 
     QDomNodeList worksTags = m_dom.elementsByTagName("WorksTags");
     for (int i = 0; i < worksTags.count(); i++) {
@@ -112,7 +130,7 @@ void ACGTagGenerator::InitializeWorksTagsTree()
             bool bWorkNameFound = false;
             for (int k = 0; k < workChildren.count(); k++) {
                 if (workChildren.item(k).toElement().tagName() == "name") {
-                    if (!bWorkNameFound ) {
+                    if (!bWorkNameFound && !workChildren.item(k).toElement().text().isEmpty()) {
                         ui->comboBoxWork->addItem(workChildren.item(k).toElement().text());
                         item = new QTreeWidgetItem(QStringList(workChildren.item(k).toElement().text()));
                         ui->treeWidgetWork->addTopLevelItem(item);
@@ -151,13 +169,15 @@ bool ACGTagGenerator::UpdateWorkCharComboBox(bool bWork)
         targetParentNode = targetNode.parentNode();
         if (targetParentNode.isNull())
             return false;
+
+        int rowCounter = 0;
         targetParentChildren = targetParentNode.childNodes();
         for (int i = 0; i < targetParentChildren.count(); i ++) {
             QString tagName = targetParentChildren.item(i).toElement().tagName();
             QString content = targetParentChildren.item(i).toElement().text();
             if ( tagName == "name") {
-                if (i < ui->tableWidgetWork->rowCount())
-                    ui->tableWidgetWork->setItem(i, 0, new QTableWidgetItem(content));
+                if (i < ui->tableWidgetWork->rowCount() && rowCounter < ui->tableWidgetWork->rowCount() && !content.isEmpty())
+                    ui->tableWidgetWork->setItem(rowCounter++, 0, new QTableWidgetItem(content));
             } else if (tagName == "char") {
                 QDomNodeList charChildren = targetParentChildren.item(i).toElement().elementsByTagName("name");
                 for (int j = 0; j < charChildren.count(); j++) {
@@ -237,6 +257,35 @@ void ACGTagGenerator::on_pushButton_clicked()
         QDomNode targetNode;
         findTargetNode(m_dom, "WorksTags", itemChar->text(0), targetNode);
         traverseParent(targetNode, output);
+
+        if (!targetNode.isNull()) {
+            QDomNode targetParentNode = targetNode.parentNode();
+            if (!targetParentNode.isNull() && targetParentNode.toElement().tagName() == "char") {
+                QDomNode targetGrandParentNode = targetParentNode.parentNode();
+                if (!targetGrandParentNode.isNull() && targetGrandParentNode.toElement().tagName() == "work") {
+                    QDomNode targetNodeSibling = targetGrandParentNode.firstChild();
+                    while (!targetNodeSibling.isNull()) {
+                        if (targetNodeSibling.toElement().tagName() == "name") {
+                            ui->comboBoxWork->setCurrentText(targetNodeSibling.toElement().text());
+                            break;
+                        }
+                        targetNodeSibling = targetNodeSibling.nextSibling();
+                    }
+
+                    if (!targetNodeSibling.isNull())
+                        ui->comboBoxChar->setCurrentText(targetNode.toElement().text());
+                }
+            } else if (!targetParentNode.isNull() && targetParentNode.toElement().tagName() == "work") {
+                QDomNode targetNodeSibling = targetParentNode.firstChild();
+                while (!targetNodeSibling.isNull()) {
+                    if (targetNodeSibling.toElement().tagName() == "name") {
+                        ui->comboBoxWork->setCurrentText(targetNodeSibling.toElement().text());
+                        break;
+                    }
+                    targetNodeSibling = targetNodeSibling.nextSibling();
+                }
+            }
+        }
     }
 
     if (itemPlace != NULL) {
@@ -316,6 +365,9 @@ bool ACGTagGenerator::addWorkNameNode(QDomNode &targetNode)
 
 void ACGTagGenerator::on_pushButtonApply_clicked()
 {
+    if (m_TagXmlFileName.isEmpty())
+        return;
+
     QDomNode targetNode;
     if (findTargetNode(m_dom, "WorksTags", ui->comboBoxWork->currentText(), targetNode)) {
         QDomNode targetParentNode = targetNode.parentNode();
@@ -323,9 +375,9 @@ void ACGTagGenerator::on_pushButtonApply_clicked()
             return; // XML file may have incorrect data format.
 
         // Remove all work's name.
-        QDomNode sibling = targetNode.toElement().nextSibling();
-        if (targetNode.toElement().tagName() == "name")
-            targetParentNode.removeChild(targetNode);
+        QDomNode sibling = targetParentNode.firstChild();
+        //if (targetNode.toElement().tagName() == "name")
+        //    targetParentNode.removeChild(targetNode);
         while (!sibling.isNull()) {
             QDomNode removeCandidate = sibling;
             sibling = sibling.toElement().nextSibling();
@@ -370,7 +422,7 @@ void ACGTagGenerator::on_pushButtonApply_clicked()
             newWorksTags.appendChild(newWork);
     }
 
-    QFile *file = new QFile(m_TagXmlFileName);
+    QFile *file = new QFile(m_TagXmlFileName + ".tmp");
     if (file->open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream stream(file);
         stream.setCodec("UTF-8");
@@ -391,6 +443,13 @@ void ACGTagGenerator::on_comboBoxWork_currentTextChanged(const QString &arg1)
 
 void ACGTagGenerator::on_pushButtonOpen_clicked()
 {
-    m_TagXmlFileName = QFileDialog::getOpenFileName(this, tr("Open Tag XML"), "./", tr("XML Files (*.xml *.XML);;All Files (*.*)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Tag XML"), "./", tr("XML Files (*.xml *.XML);;All Files (*.*)"));
+
+    if (fileName != m_TagXmlFileName) {
+        clearCurrentDom();
+        m_TagXmlFileName = fileName;
+    }
+
     Initialize();
+    ui->plainTextEdit->clear();
 }
