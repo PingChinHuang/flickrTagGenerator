@@ -1,0 +1,900 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<ACGTag>
+    <CommonTags>
+        <item>Cosplay</item>
+        <item>同人</item>
+        <item>角色扮演</item>
+        <item>ACG</item>
+        <item>動畫</item>
+        <item>漫畫</item>
+        <item>小說</item>
+        <item>遊戲</item>  
+    </CommonTags>
+    
+    <LocationTags>
+        <country>
+            <name>台灣</name>
+            <name>Taiwan</name>
+            <city>
+                <name>台北</name>
+                <name>Taipei City</name>
+                <place>
+                    <name>台灣大學綜合體育館</name>
+                    <name>NTU</name>
+                    <name>National Taiwan University</name>
+                </place>
+                <place>
+                    <name>花博公園爭豔館</name>
+                    <name>Taipei Expo Park</name>
+                    <name>Expo Dome</name>
+                </place>
+            </city>
+        </country>
+    </LocationTags>
+    
+    <ActivitiesTags>
+        <activity>
+            <name>Comic World Taiwan</name>
+            <name>CWT</name>
+            <name>台灣同人誌販售會</name>
+        </activity>
+        <activity>
+            <name>Fancy Frontier</name>
+            <name>FF</name>
+            <name>開拓動漫祭</name>
+        </activity>
+        <activity>
+            <name>Petit Fancy</name>
+            <name>PF</name>
+            <name>亞洲動漫創作展</name>
+        </activity>
+        <activity>
+            <name>In Comic Energy</name>
+            <name>ICE</name>
+            <name>動漫之力</name>
+            <name>動漫力</name>
+        </activity>       
+    </ActivitiesTags>
+    
+    <WorksTags>
+        <work>
+            <name>東京喰種</name>
+            <name>Tokyo Ghoul</name>
+            <name>東京食屍鬼</name>
+            <name>東京喰種トーキョーグール</name>
+            <char>
+                <name>霧嶋董香</name>
+                <name>トーカ</name>
+                <name>兔子</name>
+                <name>ラビット</name>
+            </char>
+            <char>
+                <name>金木研</name>
+                <name>Kaneki Ken</name>
+                <name>カネキ ムカデ</name>
+                <name>眼罩</name>
+                <name>蜈蚣</name>
+            </char>        
+        </work>
+        <work>
+            <name>VOCALOID</name>
+            <char>
+                <name>鏡音雙子</name>
+                <name>Kagamine Rin</name>
+                <name>鏡音リン</name>
+                <name>鏡音鈴</name>
+            </char>
+            <char>
+                <name>鏡音雙子</name>
+                <name>Kagamine Len</name>
+                <name>鏡音レン</name>
+                <name>鏡音連</name>
+            </char>
+            <char>
+                <name>巡音Luka</name>
+                <name>巡音流歌 </name>
+                <name>巡音流香</name>
+                <name>Megurine Luka</name>
+                <name>巡音ルカ</name>
+            </char>
+            <char>
+                <name>初音Miku</name>
+                <name>初音未來</name>
+                <name>初音ミク</name>
+                <name>Hatsune Miku</name>
+            </char>
+            <char>
+                <name>See U</name>
+            </char>
+        </work>
+        <work>
+            <name>義呆利 Axis Powers</name>
+            <name>ヘタリア Axis Powers</name>
+            <name>Hetalia: Axis Powers</name>
+            <name>APH</name>
+            <char>
+                <name>列/支/敦/士/登</name>
+                <name>リヒテンシュタイン</name>
+                <name>Fürstentum/Liechtenstein</name>
+            </char>
+        </work>
+        <work>
+            <name>庫洛魔法使</name>
+            <name>カードキャプターさくら</name>
+            <name>Cardcaptor Sakura</name>
+            <char>
+                <name>小櫻</name>
+                <name>木之本櫻</name>
+            </char>
+        </work>
+        <work>
+            <name>超時空要塞 Frontier</name>
+            <name>マクロスF (フロンティア)</name>
+            <name>Macross Frontier</name>
+            <char>
+                <name>蘭花·李</name>
+                <name>ランカ・リー</name>
+                <name>Ranka Lee</name>
+            </char>
+            <char>
+                <name>雪露·諾姆</name>
+                <name>シェリル・ノーム</name>
+                <name>Sheryl Nome</name>
+            </char>
+        </work>
+        <work>
+            <name>Nitro+</name>
+            <char>
+                <name>超級索尼子</name>
+                <name>すーぱーそに子</name>
+                <name>Super Sonico</name>
+            </char>
+        </work>
+        <work>
+            <name>妖狐×僕SS</name>
+            <name>Inu × Boku Secret Service</name>
+            <char>
+                <name>髏髏宮加留多</name>
+                <name>髏々宮カルタ</name>
+            </char>
+            <char>
+                <name>白鬼院凜凜蝶</name>
+                <name>白鬼院凜々蝶</name>
+                <name>しらきいん りりちよ</name>
+            </char>
+        </work>
+        <work>
+            <name>航海王</name>
+            <name>海賊王</name>
+            <name>ワンピース</name>
+            <name>ONE PIECE</name>            
+            <char>
+                <name>娜美</name>
+                <name>ナミ</name>
+                <name>Nami</name>
+            </char>
+        </work>
+        <work>
+            <name>新世紀福音戰士</name>
+            <name>新世紀エヴァンゲリオン</name>
+            <name>Neon Genesis Evangelion</name>     
+            <char>
+                <name>綾波零</name>
+                <name>綾波レイ</name>
+                <name>Ayanami Rei</name>
+            </char>
+            <char>
+                <name>惣流·明日香·蘭格雷</name>
+                <name>惣流・アスカ・ラングレー</name>
+                <name>Soryu Asuka Langley</name>
+            </char>
+        </work>
+        <work>
+            <name>KILL la KILL</name>
+            <name>雙斬少女</name>
+            <name>斬服少女</name>
+            <name>Neon Genesis Evangelion</name>     
+            <char>
+                <name>纏流子</name>
+            </char>
+            <char>
+                <name>鬼龍院皐月</name>
+            </char>
+        </work>
+        <work>
+            <name>艦隊Collection -艦Colle-</name>
+            <name>艦隊これくしょん -艦これ-</name>
+            <name>艦隊收藏</name>
+            <name>かんたいこれくしょん -かんこれ-</name>     
+            <char>
+                <name>矢矧</name>
+                <name>やはぎ</name>
+                <name>阿賀野級輕巡洋艦三號艦</name>
+            </char>
+            <char>
+                <name>伊19</name>
+                <name>巡潜乙型三号舰</name>
+                <name>い19</name>
+            </char>
+            <char>
+                <name>金剛</name>
+                <name>金剛型高速戰艦</name>
+                <name>金剛型一番艦</name>
+                <name>－KONGOU－</name>
+            </char>
+        </work>
+        <work>
+            <name>LoveLive!</name>
+            <name>ラブライブ!</name>
+            <name>LoveLive! School idol project</name>
+            <name>Love Live! School Idol Diary</name>     
+            <char>
+                <name>矢澤日香</name>
+                <name>矢澤仁子</name>
+                <name>矢澤妮可</name>
+                <name>矢澤 にこ</name>
+                <name>Tazawa Nico</name>
+            </char>
+            <char>
+                <name>星空凛</name>
+                <name>ほしぞら りん</name>
+                <name>Hoshizora Rin</name>
+            </char>
+            <char>
+                <name>南琴梨</name>
+                <name>南 ことり</name>
+                <name>みなみ ことり</name>
+                <name>南小鳥</name>
+            </char>
+            <char>
+                <name>高坂穗乃果</name>
+                <name>こうさか ほのか</name>
+                <name>Kousaka Honoka</name>
+            </char>
+            <char>
+                <name>東條希</name>
+                <name>とうじょう のぞみ</name>
+                <name>Toujou Nozomi</name>
+            </char>
+            <char>
+                <name>絢瀬絵里</name>
+                <name>あやせ　えり</name>
+                <name>Ayase Eli</name>
+            </char>
+            <char>
+                <name>園田海未</name>
+                <name>あやせ　えり</name>
+                <name>Sonoda Umi</name>
+            </char>
+            <char>
+                <name>西木野真姬</name>
+                <name>にしきの まき</name>
+                <name>Nishikino Maki</name>
+            </char>
+            <char>
+                <name>小泉花陽</name>
+                <name>こいずみ はなよ</name>
+                <name>Koizumi Hanayo</name>
+            </char>
+        </work>
+        <work>
+            <name>黒執事</name>
+            <name>Black Butler</name>   
+            <char>
+                <name>謝爾·凡多姆海伍 </name>
+                <name>シエル・ファントムハイヴ</name>
+                <name>Ciel Phantomhive</name>
+            </char>
+            <char>
+                <name>亞洛斯·特蘭西</name>
+                <name>アロイス・トランシー</name>
+                <name>Alois Trancy</name>
+            </char>
+            <char>
+                <name>梅琳</name>
+                <name>メイリン</name>
+                <name>Mey-Rin</name>
+            </char>
+            <char>
+                <name>伊莉莎白·米多福特</name>
+                <name>エリザベス・ミッドフォード</name>
+                <name>Elizabeth Ethel Cordelia Midford</name>
+            </char>
+        </work>
+        <work>
+            <name>黑色子彈</name>
+            <name>ブラック・ブレット</name>
+            <name>Black Bullet</name>
+            <name>漆黑的子彈</name>     
+            <char>
+                <name>天童木更</name>
+            </char>
+            <char>
+                <name>藍原延珠</name>
+            </char>
+        </work>
+        <work>
+            <name>化物語</name>
+            <name>物語系列</name>
+            <name>〈物語〉シリーズ</name>   
+            <char>
+                <name>阿良良木月火</name>
+                <name>阿良々木 月火</name>
+                <name>あららぎ つきひ</name>
+                <name>正義そのもの</name>                
+            </char>
+            <char>
+                <name>戰場原黑儀</name>
+                <name>戦場ヶ原ひたぎ</name>
+                <name>せんじょうがはらひたぎ</name>
+            </char>
+            <char>
+                <name>八九寺真宵</name>
+                <name>はちくじ まよい</name>
+            </char>
+            <char>
+                <name>忍野忍</name>
+                <name>おしの しのぶ</name>
+                <name>キスショット・アセロラオリオン・ハートアンダーブレード</name>
+                <name>Kissshot Acerolaorion Heartunderblade</name>
+            </char>
+        </work>
+        <work>
+            <name>零之地帶</name>
+            <name>ZONE-00</name>
+            <name>ゾーンゼロゼロ</name>   
+            <char>
+                <name>沖野真夜子</name>
+                <name>MAYOKO</name>
+                <name>西之魔女</name>
+            </char>
+            <char>
+                <name>弁天</name>
+                <name>Benten</name>
+            </char>
+            <char>
+                <name>吉祥</name>
+            </char>
+            <char>
+                <name>毘沙門</name>
+            </char>
+        </work>
+        <work>
+            <name>妖精尾巴</name>
+            <name>FAIRYTAIL</name>
+            <name>フェアリーテイル</name>   
+            <name>魔導少年</name>   
+            <char>
+                <name>芭露歌</name>
+                <name>黃道十二宮</name>
+                <name>處女座</name>
+                <name>星靈</name>
+                <name>バルゴ</name>
+                <name>Virgo</name>           
+            </char>
+            <char>
+                <name>阿莉耶絲</name>
+                <name>牡羊座</name>
+                <name>アリエス</name>
+                <name>Aries</name>
+                <name>黃道十二宮</name>
+            </char>
+            <char>
+                <name>芙蕾雅‧柯羅納</name>
+                <name>フレア・コロナ</name>
+                <name>Flare Corona</name>
+            </char>
+        </work>
+        <work>
+            <name>Unlight</name>   
+            <char>
+                <name>里斯</name>
+                <name>リーズ</name>
+                <name>Riesz</name>
+            </char>
+            <char>
+                <name>露緹亞</name>
+                <name>ルディア</name>
+                <name>Rudia</name>
+            </char>
+            <char>
+                <name>音音夢</name>
+                <name>ネネム</name>
+                <name>Nenem</name>
+            </char>
+            <char>
+                <name>多妮妲</name>
+                <name>ドニタ</name>
+                <name>Donita</name>
+            </char>
+            <char>
+                <name>雪莉</name>
+                <name>シェリ</name>
+                <name>Sheri</name>
+            </char>
+        </work>
+        <work>
+            <name>我們仍未知道那天所看見的花名。</name>
+            <name>あの日見た花の名前を僕達はまだ知らない。</name>
+            <name>Anohana: The Flower We Saw That Day</name>
+            <name>未聞花名</name>     
+            <name>那朵花</name> 
+            <name>あの花</name>        
+            <char>
+                <name>本間 芽衣子</name>
+                <name>小芽</name>
+                <name>芽間</name>
+                <name>面麻</name>
+                <name>ほんま めいこ</name>
+                <name>めんま</name>
+            </char>
+        </work>
+        <work>
+            <name>虎與龍</name>
+            <name>とらドラ！</name>
+            <name>Toradora!TIGER×DRAGON!</name>   
+            <char>
+                <name>逢坂大河</name>
+                <name>掌中老虎</name>
+                <name>手乗りタイガー</name>
+            </char>
+        </work>
+        <work>
+            <name>東方Project</name>   
+            <char>
+                <name>霧雨魔理沙</name>
+            </char>
+            <char>
+                <name>博麗靈夢</name>
+            </char>
+            <char>
+                <name>射命丸 文</name>
+                <name>Syameimaru Aya</name>
+                <name>しゃめいまる　あや</name>
+            </char>
+            <char>
+                <name>紅美鈴</name>
+                <name>ほんめいりん</name>
+                <name>Hong Meiling</name>
+            </char>
+        </work>
+        <work>
+            <name>LoL</name>
+            <name>League of Legends</name>
+            <name>英雄聯盟</name>    
+            <char>
+                <name>好運姐</name>
+                <name>Miss Fortune</name>
+                <name>賞金獵人</name>
+                <name>Bounty Hunter</name>       
+            </char>
+            <char>
+                <name>雷玟</name>
+                <name>Riven</name>
+                <name>破刃放逐者</name>
+                <name>Exile</name>
+            </char>
+            <char>
+                <name>阿璃</name>
+                <name>Ahri</name>
+                <name>九尾妖狐</name>
+                <name>Nine-Tailed Fox</name>
+            </char>
+            <char>
+                <name>安妮</name>
+                <name>Annie</name>
+                <name>黑暗之女</name>
+                <name>Dark Child</name>
+            </char>
+            <char>
+                <name>索娜</name>
+                <name>Sona</name>
+                <name>琴瑟仙女</name>
+                <name>Maven of the Strings</name>
+            </char>
+            <char>
+                <name>伊澤瑞爾</name>
+                <name>The Prodigal Explorer</name>
+                <name>探險家</name>
+                <name>Ezreal</name>
+            </char>
+            <char>
+                <name>露璐</name>
+                <name>精靈魔法使</name>
+                <name>The Fae Sorceress</name>
+                <name>Lulu</name>
+            </char>
+        </work>
+        <work>
+            <name>來自風平浪靜的明日</name>
+            <name>凪のあすから</name>
+            <name>Nagi-Asu: A Lull in the Sea</name>    
+            <char>
+                <name>向井戶愛花</name>
+                <name>向井戸 まなか</name>
+                <name>むかいど まなか</name>    
+            </char>
+            <char>
+                <name>比良平千咲</name>
+                <name>比良平 ちさき</name>
+                <name>ひらだいら ちさき</name>
+            </char>
+        </work>
+        <work>
+            <name>刀劍神域</name>
+            <name>Sword Art Online</name>
+            <name>ソードアート・オンライン</name>    
+            <name>SAO</name>   
+            <char>
+                <name>亞絲娜</name>
+                <name>結城明日奈</name>
+                <name>アスナ</name>
+                <name>ゆうき あすな</name> 
+                <name>Asuna</name> 
+            </char>
+            <char>
+                <name>莉法</name>
+                <name>桐谷直葉</name>
+                <name>リーファ</name>
+                <name>桐ヶ谷直葉</name>
+                <name>きりがや すぐは</name>
+                <name>Leafa</name>
+            </char>
+        </work>
+        <work>
+            <name>HUNTER×HUNTER</name>
+            <name>ハンター×ハンター</name>
+            <name>獵人</name>    
+            <char>
+                <name>比司吉·酷露佳</name>
+                <name>Biscuit Krueger</name>
+                <name>ビスケット＝クルーガー</name>
+            </char>
+        </work>
+        <work>
+            <name>科學小飛俠crowds</name>
+            <name>ガッチャマン クラウズ</name>
+            <name>GATCHAMAN Crowds</name>    
+            <char>
+                <name>爾乃美家累</name>
+                <name>にのみや るい</name>
+            </char>
+        </work>
+        <work>
+            <name>約會大作戰</name>
+            <name>デート・ア・ライブ</name>
+            <name>DATE A LIVE</name>   
+            <char>
+                <name>四糸乃</name>
+                <name>よしの</name>
+            </char>
+            <char>
+                <name>時崎狂三</name>
+            </char>
+            <char>
+                <name>鳶一折紙</name>
+                <name>とびいち おりがみ</name>
+                <name>Origami Tobiichi</name>
+            </char>
+        </work>
+        <work>
+            <name>中二病也想談戀愛！</name>
+            <name>中二病でも恋がしたい！</name>
+            <name>Love, Chunibyo &amp; Other Delusions!</name>   
+            <char>
+                <name>小鳥遊六花</name>
+            </char>
+            <char>
+                <name>丹生谷森夏</name>
+            </char>
+            <char>
+                <name>七宮智音</name>
+            </char>
+        </work>
+        <work>
+            <name>光明之心～幸福的麵包～</name>
+            <name>シャイニング・ハーツ ～幸せのパン～</name>
+            <name>Shining Hearts: Bread of Happiness</name>   
+            <char>
+                <name>梅露蒂</name>
+                <name>メルティ</name>
+            </char>
+        </work>
+        <work>
+            <name>境界的彼方</name>
+            <name>境界の彼方</name>
+            <name>Beyond the Boundary</name>   
+            <char>
+                <name>名瀨美月</name>
+            </char>
+        </work>
+        <work>
+            <name>Free!</name>
+            <name>フリー</name>  
+            <char>
+                <name>七瀨遙</name>
+            </char>
+            <char>
+                <name>橘真琴</name>
+            </char>
+        </work>
+        <work>
+            <name>Lamento -BEYOND THE VOID-</name>
+            <char>
+                <name>柯諾爾</name>
+                <name>Konoe</name>
+                <name>コノエ</name>
+            </char>
+        </work>
+        <work>
+            <name>人型電腦天使心</name>
+            <name>Chobits</name>
+            <name>ちょびっツ</name>   
+            <char>
+                <name>小唧</name>
+                <name>Chi</name>
+            </char>
+        </work>
+        <work>
+            <name>我的妹妹哪有這麼可愛</name>
+            <name>俺の妹がこんなに可愛いわけがない</name>
+            <name>ore no imouto ga konnani kawaii wake ga nai</name>  
+            <name>Oreimo</name>  
+            <char>
+                <name>黑貓</name>
+                <name>五更瑠璃</name>
+            </char>
+        </work>
+        <work>
+            <name>機巧少女不會受傷</name>  
+            <name>機巧少女は傷つかない</name>
+            <name>Unbreakable Machine-Doll</name>
+            <char>
+                <name>夜夜</name>
+                <name>夜々</name>
+                <name>やや</name>
+            </char>
+        </work>
+        <work>
+            <name>龍族拼圖</name>  
+            <name>Puzzle&amp;Dragons</name>
+            <name>PAD</name>
+            <char>
+                <name>白盾女神・瓦爾奇琳</name>
+            </char>
+        </work>
+        <work>
+            <name>問題兒童都來自異世界</name>  
+            <name>問題児たちが異世界から来るそうですよ？</name>
+            <name>Problem children are coming from another world, aren't they?</name>
+            <char>
+                <name>白夜叉</name>
+            </char>
+        </work>
+        <work>
+            <name>K-ON!輕音部</name>  
+            <char>
+                <name>中野梓</name>
+                <name>梓喵</name>
+                <name>なかの あずさ</name>
+                <name>Nakano Azusa</name>
+            </char>
+        </work>
+        <work>
+            <name>七宗罪</name>  
+            <name>七つの大罪</name>
+            <name>The Seven Deadly Sins</name>
+            <char>
+                <name>傲慢</name>
+                <name>Pride</name>
+            </char>
+        </work>
+        <work>
+            <name>魔法公主</name>  
+            <name>もののけ姫</name>
+            <char>
+                <name>小桑</name>
+                <name>サン</name>
+            </char>
+        </work>
+        <work>
+            <name>魔法少女小圓</name>  
+            <name>魔法少女まどか☆マギカ</name>
+            <name>Puella Magi Madoka Magica</name>
+            <name>廢怯少女</name>
+        </work>
+        <work>
+            <name>VOCALOID2</name>  
+            <name>Megpoid</name>
+            <name>メグッポイド</name>
+            <char>
+                <name>GUMI</name>
+            </char>
+        </work>
+        <work>
+            <name>薔薇少女</name>
+            <name>ローゼンメイデン</name>
+            <name>Rozen Maiden</name>     
+            <char>
+                <name>雪華綺晶</name>
+                <name>きらきしょう</name>
+                <name>Schnee Kristall</name>
+            </char>
+            <char>
+                <name>水銀燈</name>
+                <name>Mercury Lampe</name>
+                <name>すいぎんとう</name>
+            </char>
+        </work>
+        <work>
+            <name>遊戲人生</name>
+            <name>ノーゲーム・ノーライフ</name>
+            <name>NO GAME NO LIFE</name>     
+            <char>
+                <name>初瀨伊綱</name>
+                <name>初瀬いづな</name>
+                <name>はつせ いづな</name>
+            </char>
+        </work>
+        <work>
+            <name>VOCALOID-CHINA</name>
+            <name>VOCALOID3</name> 
+            <char>
+                <name>洛天依</name>
+            </char>
+        </work>
+        <work>
+            <name>我的腦內戀礙選項</name>  
+            <name>俺の脳内選択肢が、学園ラブコメを全力で邪魔している</name>
+            <char>
+                <name>裘可拉</name>
+            </char>
+        </work>
+        <work>
+            <name>陽炎計劃</name>
+            <name>カゲロウプロジェクト</name>
+            <name>Kagerou Project</name>     
+            <char>
+                <name>榎本貴音</name>
+                <name>えのもと たかね</name>
+                <name>ENOMOTO TAKANE</name>
+                <name>エネ</name>
+                <name>ENE</name>
+            </char>
+        </work>
+        <work>
+            <name>灼眼的夏娜</name>
+            <name>灼眼のシャナ</name>
+            <name>Shana of the Blazing Eyes</name>     
+            <char>
+                <name>夏娜</name>
+                <name>シャナ</name>
+                <name>Shana</name>
+            </char>
+        </work>
+        <work>
+            <name>我的朋友很少</name>
+            <name>僕は友達が少ない</name>
+            <name>Haganai</name>
+            <name>友少</name>
+            <name>はがない</name>  
+            <char>
+                <name>柏崎星奈</name>
+                <name>かしわざき せな</name>
+            </char>
+        </work>
+        <work>
+            <name>槍彈辯駁 希望學園與絕望高中生</name>
+            <name>彈丸論破</name>
+            <name>ダンガンロンパ 希望の学園と絶望の高校生</name>     
+            <name>Danganronpa: Trigger Happy Havoc</name>
+            <char>
+                <name>江ノ島 盾子</name>
+                <name>江之島盾子</name>
+            </char>
+            <char>
+                <name>戰刃骸</name>
+                <name>戦刃 むくろ</name>
+            </char>
+            <char>
+                <name>瑟雷絲蒂亞·盧登堡</name>
+                <name>セレスティア・ルーデンベルク</name>
+            </char>
+        </work>
+        <work>
+            <name>狼與辛香料</name>
+            <name>狼と香辛料</name>
+            <name>Spice and Wolf</name> 
+            <char>
+                <name>赫蘿</name>
+                <name>ホロ</name>
+            </char>
+        </work>
+        <work>
+            <name>農林</name>
+            <name>のうりん</name>
+            <name>NO-RIN</name>     
+            <char>
+                <name>木下林檎</name>
+                <name>草壁ゆか</name>
+                <name>きのした りんご</name>
+                <name>くさかべ ゆか</name>
+            </char>
+        </work>
+        <work>
+            <name>天元突破 紅蓮螺巖</name>
+            <name>天元突破グレンラガン</name>
+            <name>Gurren Lagann</name>     
+            <char>
+                <name>妮亞</name>
+                <name>ニア・テッペ</name>
+                <name>Nia Teppelin</name>
+            </char>
+        </work>
+        <work>
+            <name>零之使魔</name>
+            <name>ゼロの使い魔</name>
+            <name>The Familiar of Zero</name>     
+            <char>
+                <name>露易絲·法蘭西斯·露·布朗·杜·拉·瓦利埃爾</name>
+                <name>Ruizu Fransowāzu ru Buran do ra Variēru</name>
+                <name>ルイズ・フランソワーズ・ル・ブラン・ド・ラ・ヴァリエール</name>
+            </char>
+        </work>
+        <work>
+            <name>絕園的暴風雨</name>
+            <name>絶園のテンペスト</name>
+            <name>Blast of Tempest</name>     
+            <char>
+                <name>不破愛花</name>
+                <name>ふわ あいか</name>
+            </char>
+        </work>
+        <work>
+            <name>轉吧！企鵝罐</name>
+            <name>輪るピングドラム</name>
+            <name>MAWARU-PENGUINDRUM</name>
+            <name>迴轉企鵝罐</name>
+            <name>旋轉企鵝罐</name>     
+            <char>
+                <name>高倉陽毬</name>
+                <name>たかくら ひまり</name>
+                <name>水晶公主</name>
+                <name>Princess of the Crystal</name>
+                <name>プリンセス・オブ・ザ・クリスタル</name>
+            </char>
+        </work>
+        <work>
+            <name>Final Fantasy X</name>
+            <name>太空戰士</name>
+            <name>最終幻想</name>     
+            <char>
+                <name>優娜</name>
+                <name>Yuna</name>
+            </char>
+        </work>
+        <work>
+            <name>銀魂</name>
+            <name>Gin Tama</name>
+            <name>ぎんたま</name>     
+            <char>
+                <name>高杉晉助</name>
+                <name>たかすぎ しんすけ</name>
+                <name>Takasugi Shinsuke</name>
+            </char>
+        </work>
+        <work>
+            <name>魔域幽靈</name>
+            <name>Darkstalkers</name>
+            <name>ヴァンパイア</name>     
+            <char>
+                <name>莫莉卡·安斯蘭特</name>
+                <name>女妖</name>
+                <name>Morrigan Aensland</name>
+                <name>夜の女王</name>
+                <name>午夜的女王</name>
+            </char>
+        </work>
+    </WorksTags>
+</ACGTag>
