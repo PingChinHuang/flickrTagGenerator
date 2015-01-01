@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml
+QT       += core gui xml sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -18,3 +18,5 @@ SOURCES += main.cpp\
 HEADERS  += acgtaggenerator.h
 
 FORMS    += acgtaggenerator.ui
+
+QTPLUGIN += qsqlite

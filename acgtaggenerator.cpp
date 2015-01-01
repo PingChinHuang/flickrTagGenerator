@@ -4,15 +4,22 @@
 #include <QFile>
 #include <QDebug>
 #include <QFileDialog>
+#include <QMutexLocker>
+#include <QMessageBox>
 
 ACGTagGenerator::ACGTagGenerator(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::ACGTagGenerator)
+    ui(new Ui::ACGTagGenerator),
+    m_ACGDB(new CACGDB("./acg_db.sqlite", "QSQLITE"))
 {
     ui->setupUi(this);
     ui->pushButton->hide();
     setWindowFlags(Qt::MSWindowsFixedSizeDialogHint);
     //Initialize();
+    setAutoFillBackground(true);
+    QPalette q = this->palette();
+    q.setColor(QPalette::Background, QColor(Qt::white));
+    setPalette(q);
 
     connect(ui->treeWidgetActivity, SIGNAL(itemSelectionChanged()),
             this, SLOT(on_itemSelectionChanged()));
@@ -25,6 +32,7 @@ ACGTagGenerator::ACGTagGenerator(QWidget *parent) :
 ACGTagGenerator::~ACGTagGenerator()
 {
     clearCurrentDom();
+    delete m_ACGDB;
     delete ui;
 }
 
@@ -452,4 +460,552 @@ void ACGTagGenerator::on_pushButtonOpen_clicked()
 
     Initialize();
     ui->plainTextEdit->clear();
+}
+
+CDBControl::CDBControl(const QString& dbPath, const QString& dbType)
+    : m_ref(0),
+      m_dbPath(dbPath),
+      m_dbType(dbType)
+{
+    //OpenDB(dbPath, dbType);
+    m_db = QSqlDatabase::addDatabase(m_dbType, QString("con%1").arg(m_dbPath));
+    m_db.setDatabaseName(m_dbPath);
+}
+
+CDBControl::~CDBControl()
+{
+    CloseDB();
+    m_db.removeDatabase(QString("con%1").arg(m_dbPath));
+}
+
+bool CDBControl::OpenDB()
+{
+    m_db = QSqlDatabase::database(QString("con%1").arg(m_dbPath));
+    if (!m_db.open()) {
+        qDebug() << m_db.lastError();
+        return false;
+    }
+
+    return true;
+}
+
+void CDBControl::CloseDB()
+{
+    if (m_db.isOpen() && m_ref == 0) {
+        m_db.close();
+    }
+}
+
+bool CDBControl::QueryDB(const QString &query)
+{
+    bool ret = false;
+
+    if (!OpenDB())
+        return false;
+
+    QSqlQuery qry(m_db);
+    qry.prepare(query);
+    if (!(ret = qry.exec())) {
+        QMessageBox message(QMessageBox::Warning,"Error",qry.lastError().text(),QMessageBox::Ok,NULL);
+        message.exec();
+    }
+
+    CloseDB();
+
+    return ret;
+}
+
+bool CDBControl::QueryDB(const QString& query, QSqlQuery& requester)
+{
+    bool ret = false;
+
+    if (!OpenDB())
+        return false;
+
+    QSqlQuery qry(m_db);
+    qry.prepare(query);
+    if (!(ret = qry.exec())) {
+        QMessageBox message(QMessageBox::Warning,"Error",qry.lastError().text(),QMessageBox::Ok,NULL);
+        message.exec();
+    }
+
+    requester = qry;
+
+    CloseDB();
+
+    return ret;
+}
+
+bool CDBControl::CreateTable(const QString &name, struct DBTableDefinition& definition)
+{
+    //if (IsOpen()) {
+        QString query = "CREATE TABLE IF NOT EXISTS " + name;
+        QString table_definition = " (";
+
+        // "CREATE TABLE IF NOT EXISTS names (id INTEGER UNIQUE PRIMARY KEY, firstname VARCHAR(30), lastname VARCHAR(30))"
+        for (unsigned i = 0; i < definition.fieldNames.count(); i++) {
+            table_definition += definition.fieldNames.at(i);
+            table_definition += " ";
+            table_definition += definition.fieldTypes.at(i);
+            if (i == definition.fieldPrimary) {
+                table_definition += " UNIQUE PRIMARY KEY";
+            } else if (definition.fieldUnique.at(i)) {
+                table_definition += " UNIQUE";
+            } else if (definition.fieldForeign.at(i)) {
+                table_definition += QString(" REFERENCES %1(%2)").arg(definition.fieldForeignDefinition.at(i).refDB).arg(definition.fieldForeignDefinition.at(i).refField);
+            }
+
+            if (i != definition.fieldNames.count() - 1)
+                table_definition += ", ";
+        }
+        table_definition += ")";
+
+        query += table_definition;
+        //query += " WITHOUT ROWID"; // I want use my own primary key.
+
+        //qDebug() << query;
+        return QueryDB(query);
+    /*} else {
+        qDebug() << "DB is not opened.";
+    }*/
+
+    //return false;
+}
+
+bool CDBControl::IsOpen()
+{
+    return m_db.isOpen();
+}
+
+void CDBControl::DecRef()
+{
+    QMutexLocker _l(&m_refLock);
+    if (m_ref == 0)
+        return;
+    else
+        m_ref--;
+}
+
+void CDBControl::IncRef()
+{
+    QMutexLocker _l(&m_refLock);
+    m_ref++;
+}
+
+bool CDBControl::GetTableList(QStringList& tableList)
+{
+    //if (!IsOpen())
+        //return false;
+    m_db = QSqlDatabase::database(QString("con%1").arg(m_dbPath));
+    tableList = m_db.tables();
+    if (tableList.empty())
+        qDebug() << "There is no table in db.";
+
+    return true;
+}
+
+CACGDB::CACGDB (const QString &dbPath, const QString& dbType)
+    : CDBControl(dbPath, dbType),
+      m_acgTableName("ACG"),
+      m_charTableName("Character")
+      //m_dbPath(dbPath)
+      //m_hasACGTable(false),
+      //m_hasCharTable(false),
+      //m_isWorkable(false)
+{
+    QStringList tableList;
+    qDebug() << "CACGDB";
+    if (GetTableList(tableList) && !tableList.empty()) {
+        for (int i = 0; i < tableList.count() && (!m_hasACGTable || !m_hasCharTable); i++) {
+                    qDebug() << tableList.at(i);
+            if (tableList.at(i) == m_acgTableName)
+                m_hasACGTable = true;
+            else if (tableList.at(i) == m_charTableName)
+                m_hasCharTable = true;
+        }
+    }
+
+    if (!m_hasACGTable)
+        m_hasACGTable = CreateACGTable();
+
+    if (!m_hasCharTable)
+        m_hasCharTable = CreateCharTable();
+
+    //m_isWorkable = IsOpen();
+}
+
+CACGDB::~CACGDB()
+{
+    QMutexLocker _l(&m_isWorkableLock);
+    m_isWorkable = false;
+}
+
+bool CACGDB::CreateACGTable()
+{
+    //QMutexLocker _l(&m_isWorkableLock);
+    //if (!m_isWorkable)
+    //    return false;
+
+    struct DBTableDefinition definition;
+
+    definition.fieldNames.push_back("ID");
+    definition.fieldTypes.push_back("INTEGER");
+    definition.fieldForeign.push_back(false);
+    definition.fieldUnique.push_back(false);
+    definition.fieldPrimary = 0;
+    for (int i = 0; i < 10; i++) {
+        definition.fieldNames.push_back(QString("NAME%1").arg(i));
+        definition.fieldTypes.push_back("TEXT");
+        if (i == 0)
+            definition.fieldUnique.push_back(true);
+        else
+            definition.fieldUnique.push_back(false);
+        definition.fieldForeign.push_back(false);
+    }
+
+    return CreateTable(m_acgTableName, definition);
+}
+
+bool CACGDB::CreateCharTable()
+{
+    //QMutexLocker _l(&m_isWorkableLock);
+    //if (!m_isWorkable)
+    //    return false;
+
+    struct DBTableDefinition definition;
+    struct ForeignKeyDefinition fkDefinition;
+
+    definition.fieldNames.push_back("ACG");
+    definition.fieldTypes.push_back("INTEGER");
+    definition.fieldForeign.push_back(true);
+    definition.fieldUnique.push_back(false);
+    fkDefinition.refDB = m_acgTableName;
+    fkDefinition.refField = "ID";
+    definition.fieldForeignDefinition.push_back(fkDefinition);
+    definition.fieldPrimary = 1; //Name0
+    fkDefinition.refDB = "";
+    fkDefinition.refField = "";
+    for (int i = 0; i < 10; i++) {
+        definition.fieldNames.push_back(QString("NAME%1").arg(i));
+        definition.fieldTypes.push_back("TEXT");
+        definition.fieldUnique.push_back(false);
+        definition.fieldForeign.push_back(false);
+        definition.fieldForeignDefinition.push_back(fkDefinition);
+    }
+
+    return CreateTable(m_charTableName, definition);
+}
+
+bool CACGDB::IsACGExist(const QString &name, int& acgID)
+{
+    QString sqlCmd = QString("SELECT ID FROM %1 WHERE ").arg(m_acgTableName);
+    QString condition = QString("NAME0 = \"%1\"").arg(name);
+    QSqlQuery requester;
+    bool ret;
+
+    sqlCmd += condition;
+    if (ret = QueryDB(sqlCmd, requester)) {
+        for (int r = 0; requester.next(); r++) {
+            acgID = requester.value(0).toInt();
+        }
+    }
+
+    return ret;
+}
+
+bool CACGDB::QueryCharacter(const QString &name, QStringList &charAliasList, QStringList &workAliasList)
+{
+    QString queryACGFields;
+    QString queryCharFields;
+    QString queryConditions;
+    QString sqlCmd;// = QString("SELECT ID FROM %1 WHERE ").arg(m_acgTableName);
+    QSqlQuery requester;
+    bool ret;
+
+
+    for (int i = 0; i < 10; i ++) {
+        queryACGFields += QString("%1.%2").arg(m_acgTableName).arg(QString("NAME%1").arg(i));
+        queryCharFields += QString("%1.%2").arg(m_charTableName).arg(QString("NAME%1").arg(i));
+
+        if (i != 9) {
+            queryACGFields += ", ";
+            queryCharFields += ", ";
+        }
+    }
+
+    queryConditions = QString("%1.ACG = %2.ID AND %3.NAME0 = \"%4\"").arg(m_charTableName).arg(m_acgTableName).arg(m_charTableName).arg(name);
+
+    sqlCmd = QString("SELECT %1, %2 FROM %3, %4 WHERE %5").arg(queryACGFields).arg(queryCharFields).arg(m_acgTableName).arg(m_charTableName).arg(queryConditions);
+    qDebug() << sqlCmd;
+    if (ret = QueryDB(sqlCmd, requester)) {
+        QSqlRecord rec = requester.record();
+        for (int r = 0; requester.next(); r++) {
+            for (int c = 0; c < rec.count(); c++) {
+                qDebug() << QString("Row %1, %2, %3").arg(r).arg(rec.fieldName(c)).arg(requester.value(c).toString());
+            }
+        }
+    }
+
+    return ret;
+}
+
+bool CACGDB::QueryACG(QString &name)
+{
+    QString queryACGFields;
+    QString queryConditions;
+    QString sqlCmd;// = QString("SELECT ID FROM %1 WHERE ").arg(m_acgTableName);
+    QSqlQuery requester;
+    bool ret;
+
+
+    for (int i = 0; i < 10; i ++) {
+        queryACGFields += QString("%1").arg(QString("NAME%1").arg(i));
+
+        if (i != 9) {
+            queryACGFields += ", ";
+        }
+    }
+
+    queryConditions = QString("NAME0 = \"%1\"").arg(name);
+
+    sqlCmd = QString("SELECT %1 FROM %2 WHERE %3").arg(queryACGFields).arg(m_acgTableName).arg(queryConditions);
+    qDebug() << sqlCmd;
+    if (ret = QueryDB(sqlCmd, requester)) {
+        QSqlRecord rec = requester.record();
+        for (int r = 0; requester.next(); r++) {
+            for (int c = 0; c < rec.count(); c++) {
+                qDebug() << QString("Row %1, %2, %3").arg(r).arg(rec.fieldName(c)).arg(requester.value(c).toString());
+            }
+        }
+    }
+
+    return ret;
+}
+
+bool CACGDB::AddACG(QStringList &aliasList)
+{
+    //QMutexLocker _l(&m_isWorkableLock);
+    //if (!m_isWorkable)
+    //    return false;
+
+    if (!m_hasACGTable)
+        if (!(m_hasACGTable = CreateACGTable()))
+            return false;
+
+    QString sqlCmd = QString("INSERT INTO %1 ").arg(m_acgTableName);
+    QString insertFields = "(";
+    QString insertValues = " VALUES (";
+
+    for (int i = 0; i < 10; i++) {
+        if (i != 9)
+            insertFields += QString("NAME%1, ").arg(i);
+        else
+            insertFields += QString("NAME%1)").arg(i);
+    }
+
+    for (int i = 0; i < 10; i++) {
+        if (i < aliasList.count())
+            insertValues += QString("\"%1\"").arg(aliasList.at(i));
+        else
+            insertValues += "\"\"";
+
+        if (i != 9)
+            insertValues += ", ";
+        else
+            insertValues += ")";
+    }
+
+    sqlCmd += insertFields;
+    sqlCmd += insertValues;
+    qDebug() << sqlCmd;
+    return QueryDB(sqlCmd);
+}
+
+bool CACGDB::IsCharacterExist(const QString &name, QString &queryResult)
+{
+    QString sqlCmd = QString("SELECT NAME0 FROM %1 WHERE ").arg(m_charTableName);
+    QString condition = QString("NAME0 = \"%1\"").arg(name);
+    QSqlQuery requester;
+    bool ret;
+
+    sqlCmd += condition;
+    qDebug() << sqlCmd;
+    if (ret = QueryDB(sqlCmd, requester)) {
+        for (int r = 0; requester.next(); r++) {
+            queryResult = requester.value(0).toString();
+        }
+    }
+
+    return ret;
+}
+
+bool CACGDB::AddCharacter(int workId, QStringList &aliasList)
+{
+    //QMutexLocker _l(&m_isWorkableLock);
+    //if (!m_isWorkable)
+    //    return false;
+
+    if (!m_hasCharTable)
+        if (!(m_hasCharTable = CreateCharTable()))
+            return false;
+
+    QString sqlCmd = QString("INSERT INTO %1 ").arg(m_charTableName);
+    QString insertFields = QString("(ACG, ");
+    QString insertValues = QString(" VALUES (%1, ").arg(workId);
+
+    for (int i = 0; i < 10; i++) {
+        if (i != 9)
+            insertFields += QString("NAME%1, ").arg(i);
+        else
+            insertFields += QString("NAME%1)").arg(i);
+    }
+
+    for (int i = 0; i < 10; i++) {
+        if (i < aliasList.count())
+            insertValues += QString("\"%1\"").arg(aliasList.at(i));
+        else
+            insertValues += "\"\"";
+
+        if (i != 9)
+            insertValues += ", ";
+        else
+            insertValues += ")";
+    }
+
+    sqlCmd += insertFields;
+    sqlCmd += insertValues;
+    qDebug() << sqlCmd;
+    return QueryDB(sqlCmd);
+}
+
+
+
+void ACGTagGenerator::on_pushButton_2_clicked()
+{
+    if (m_TagXmlFileName.isEmpty())
+        return;
+
+    int acg_id = -1;
+
+    if (m_ACGDB->IsACGExist(ui->comboBoxWork->currentText(), acg_id)) {
+        if (acg_id == -1) { // Means ACG does not exist.
+            QStringList aliasList;
+            for (int i = 0; i < ui->tableWidgetWork->rowCount(); i++) {
+                if (NULL == ui->tableWidgetWork->item(i, 0))
+                    continue;
+
+                if (!ui->tableWidgetWork->item(i, 0)->text().isEmpty()) {
+                    aliasList.push_back(ui->tableWidgetWork->item(i, 0)->text());
+                }
+            }
+
+            if (!aliasList.isEmpty()) {
+                if (!m_ACGDB->AddACG(aliasList)) {
+                    return;
+                } else {
+                    if(m_ACGDB->IsACGExist(ui->comboBoxWork->currentText(), acg_id))
+                        qDebug() << QString("%1").arg(acg_id);
+                    else
+                        return;
+                }
+            }
+        } else { // May need to modify.
+
+        }
+    }
+
+    QString queryResult = "";
+    if (m_ACGDB->IsCharacterExist(ui->comboBoxChar->currentText(), queryResult)) {
+        if (queryResult.isEmpty()) {
+            QStringList aliasList;
+            for (int i = 0; i < ui->tableWidgetChar->rowCount(); i++) {
+                if (NULL == ui->tableWidgetChar->item(i, 0))
+                    continue;
+
+                if (!ui->tableWidgetChar->item(i, 0)->text().isEmpty()) {
+                    aliasList.push_back(ui->tableWidgetChar->item(i, 0)->text());
+                }
+            }
+
+            if (!aliasList.isEmpty()) {
+                if (!m_ACGDB->AddCharacter(acg_id, aliasList)) {
+                    return;
+                } else {
+                    if (m_ACGDB->IsCharacterExist(ui->comboBoxChar->currentText(), queryResult))
+                        qDebug() << QString("%1").arg(queryResult);
+                    else
+                        return;
+                }
+            }
+        } else { // May need to modify.
+
+        }
+    }
+
+    QStringList charAliasList;
+    QStringList acgAliasList;
+    m_ACGDB->QueryCharacter(ui->comboBoxChar->currentText(), charAliasList, acgAliasList);
+
+
+    /*QDomNode targetNode;
+    if (findTargetNode(m_dom, "WorksTags", ui->comboBoxWork->currentText(), targetNode)) {
+        QDomNode targetParentNode = targetNode.parentNode();
+        if (targetParentNode.isNull())
+            return; // XML file may have incorrect data format.
+
+        // Remove all work's name.
+        QDomNode sibling = targetParentNode.firstChild();
+        //if (targetNode.toElement().tagName() == "name")
+        //    targetParentNode.removeChild(targetNode);
+        while (!sibling.isNull()) {
+            QDomNode removeCandidate = sibling;
+            sibling = sibling.toElement().nextSibling();
+            if (removeCandidate.toElement().tagName() == "name")
+                targetParentNode.removeChild(removeCandidate);
+        }
+
+        // Add by the content in the table widget.
+        addWorkNameNode(targetParentNode);
+
+        QDomNode targetCharNode;
+        if (!findTargetNode(m_dom, "WorksTags", ui->comboBoxChar->currentText(), targetCharNode)) {
+            QDomNode newChar;
+            if (createNewCharNode(newChar))
+                targetParentNode.appendChild(newChar);
+        } else {
+            targetParentNode.removeChild(targetCharNode.parentNode());
+            QDomNode newChar;
+            if (createNewCharNode(newChar))
+                targetParentNode.toElement().appendChild(newChar);
+        }
+    } else {
+        QDomNodeList worksTags = m_dom.elementsByTagName("WorksTags");
+        QDomNode newWorksTags;
+        if (worksTags.count() > 0) {
+            newWorksTags = worksTags.item(0);
+        } else {
+            newWorksTags = m_dom.createElement("WorksTags");
+            m_dom.appendChild(newWorksTags);
+        }
+
+        QDomNode newWork = m_dom.createElement("work");
+        QDomNode newChar = m_dom.createElement("char");
+        bool bAddWorkNameRet = false;
+        bool bCreateNewCharNodeRet = false;
+
+        bAddWorkNameRet = addWorkNameNode(newWork);
+        bCreateNewCharNodeRet = createNewCharNode(newChar);
+        if (bCreateNewCharNodeRet)
+            newWork.appendChild(newChar);
+        if (bCreateNewCharNodeRet || bAddWorkNameRet) // New work has at least one "char" or "name" child node.
+            newWorksTags.appendChild(newWork);
+    }
+
+    QFile *file = new QFile(m_TagXmlFileName + ".tmp");
+    if (file->open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream stream(file);
+        stream.setCodec("UTF-8");
+        stream << m_dom.toString();
+        file->close();
+    }*/
 }
