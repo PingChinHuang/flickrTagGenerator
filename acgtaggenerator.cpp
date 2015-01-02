@@ -494,11 +494,90 @@ void ACGTagGenerator::traverseParent(QDomNode &targetNode, QString &output)
     }
 }
 
+void ACGTagGenerator::GetACGCharOutputByDB(QString &output)
+{
+    QTreeWidgetItem *itemChar = ui->treeWidgetWork->currentItem();
+    if (itemChar != NULL) {
+        if (itemChar->parent() == NULL) { // ACG
+            QStringList acgFieldList;
+            QStringList acgAliasList;
+
+            if (m_ACGDB->QueryACG(itemChar->text(0), acgAliasList, acgFieldList)) {
+                for (int i = 0; i < acgAliasList.count() && !acgAliasList.at(i).isEmpty(); i++) {
+                    output += QString("\"%1\" ").arg(acgAliasList.at(i));
+                    if (i == 0)
+                        ui->comboBoxWork->setCurrentText(acgAliasList.at(i));
+                }
+            } else
+                return;
+        } else { // Character
+            QStringList acgFieldList;
+            QStringList acgAliasList;
+            QStringList charFieldList;
+            QStringList charAliasList;
+
+            if (m_ACGDB->QueryCharacter(itemChar->text(0),
+                                    charAliasList, acgAliasList,
+                                    charFieldList, acgFieldList)) {
+                for (int i = 0; i < acgAliasList.count() && !acgAliasList.at(i).isEmpty(); i++) {
+                    output += QString("\"%1\" ").arg(acgAliasList.at(i));
+                    if (i == 0)
+                        ui->comboBoxWork->setCurrentText(acgAliasList.at(i));
+                }
+                for (int i = 1; i < charAliasList.count() && !charAliasList.at(i).isEmpty(); i++) {
+                    output += QString("\"%1\" ").arg(charAliasList.at(i));
+                    if (i == 1)
+                        ui->comboBoxChar->setCurrentText(charAliasList.at(i));
+                }
+            } else
+                return;
+        }
+    }
+}
+
+void ACGTagGenerator::GetACGCharOutputByXML(QString &output)
+{
+     QTreeWidgetItem *itemChar = ui->treeWidgetWork->currentItem();
+     if (itemChar != NULL) {
+         QDomNode targetNode;
+         findTargetNode(m_dom, "WorksTags", itemChar->text(0), targetNode);
+         traverseParent(targetNode, output);
+
+         if (!targetNode.isNull()) {
+             QDomNode targetParentNode = targetNode.parentNode();
+             if (!targetParentNode.isNull() && targetParentNode.toElement().tagName() == "char") {
+                 QDomNode targetGrandParentNode = targetParentNode.parentNode();
+                 if (!targetGrandParentNode.isNull() && targetGrandParentNode.toElement().tagName() == "work") {
+                     QDomNode targetNodeSibling = targetGrandParentNode.firstChild();
+                     while (!targetNodeSibling.isNull()) {
+                         if (targetNodeSibling.toElement().tagName() == "name") {
+                             ui->comboBoxWork->setCurrentText(targetNodeSibling.toElement().text());
+                             break;
+                         }
+                         targetNodeSibling = targetNodeSibling.nextSibling();
+                     }
+
+                     if (!targetNodeSibling.isNull())
+                         ui->comboBoxChar->setCurrentText(targetNode.toElement().text());
+                 }
+             } else if (!targetParentNode.isNull() && targetParentNode.toElement().tagName() == "work") {
+                 QDomNode targetNodeSibling = targetParentNode.firstChild();
+                 while (!targetNodeSibling.isNull()) {
+                     if (targetNodeSibling.toElement().tagName() == "name") {
+                         ui->comboBoxWork->setCurrentText(targetNodeSibling.toElement().text());
+                         break;
+                     }
+                     targetNodeSibling = targetNodeSibling.nextSibling();
+                 }
+             }
+         }
+     }
+}
+
 void ACGTagGenerator::on_pushButton_clicked()
 {
     QTreeWidgetItem *itemPlace = ui->treeWidgetLocation->currentItem();
     QTreeWidgetItem *itemActivity = ui->treeWidgetActivity->currentItem();
-    QTreeWidgetItem *itemChar = ui->treeWidgetWork->currentItem();
     QString output;
 
     if (itemActivity != NULL) {
@@ -507,46 +586,14 @@ void ACGTagGenerator::on_pushButton_clicked()
         traverseParent(targetNode, output);
     }
 
-    if (itemChar != NULL) {
-        QDomNode targetNode;
-        findTargetNode(m_dom, "WorksTags", itemChar->text(0), targetNode);
-        traverseParent(targetNode, output);
-
-        if (!targetNode.isNull()) {
-            QDomNode targetParentNode = targetNode.parentNode();
-            if (!targetParentNode.isNull() && targetParentNode.toElement().tagName() == "char") {
-                QDomNode targetGrandParentNode = targetParentNode.parentNode();
-                if (!targetGrandParentNode.isNull() && targetGrandParentNode.toElement().tagName() == "work") {
-                    QDomNode targetNodeSibling = targetGrandParentNode.firstChild();
-                    while (!targetNodeSibling.isNull()) {
-                        if (targetNodeSibling.toElement().tagName() == "name") {
-                            ui->comboBoxWork->setCurrentText(targetNodeSibling.toElement().text());
-                            break;
-                        }
-                        targetNodeSibling = targetNodeSibling.nextSibling();
-                    }
-
-                    if (!targetNodeSibling.isNull())
-                        ui->comboBoxChar->setCurrentText(targetNode.toElement().text());
-                }
-            } else if (!targetParentNode.isNull() && targetParentNode.toElement().tagName() == "work") {
-                QDomNode targetNodeSibling = targetParentNode.firstChild();
-                while (!targetNodeSibling.isNull()) {
-                    if (targetNodeSibling.toElement().tagName() == "name") {
-                        ui->comboBoxWork->setCurrentText(targetNodeSibling.toElement().text());
-                        break;
-                    }
-                    targetNodeSibling = targetNodeSibling.nextSibling();
-                }
-            }
-        }
-    }
-
     if (itemPlace != NULL) {
         QDomNode targetNode;
         findTargetNode(m_dom, "LocationTags", itemPlace->text(0), targetNode);
         traverseParent(targetNode, output);
     }
+
+    //GetACGCharOutputByXML(output);
+    GetACGCharOutputByDB(output);
 
     for (int i = 0; i < m_commonTagList.count(); i++) {
         output.append("\"" + m_commonTagList[i] + "\" ");

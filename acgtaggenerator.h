@@ -140,6 +140,9 @@ private:
     void TransferXMLtoDatabase();
     void clearCurrentDom();
 
+    void GetACGCharOutputByXML(QString &output);
+    void GetACGCharOutputByDB(QString &output);
+
 private slots:
     void on_pushButton_clicked();
     void on_itemSelectionChanged();
