@@ -46,7 +46,7 @@ void ACGTagGenerator::clearCurrentDom()
     }
 }
 
-void ACGTagGenerator::Initialize()
+void ACGTagGenerator::InitializeByXML()
 {
     if (m_TagXmlFileName.isEmpty())
         return;
@@ -118,10 +118,85 @@ void ACGTagGenerator::Initialize()
         }
     }
 
-    InitializeWorksTagsTree();
+    InitializeWorksTagsTreeByXML();
 }
 
-void ACGTagGenerator::InitializeWorksTagsTree()
+void ACGTagGenerator::InitializeByDB()
+{
+    if (m_TagXmlFileName.isEmpty())
+        return;
+
+    QFile *file = new QFile(m_TagXmlFileName);
+    if (file->open(QIODevice::ReadOnly | QIODevice::Text)) {
+        m_dom.setContent(file);
+    }
+    file->close();
+
+    ui->treeWidgetCommon->clear();
+    QDomNodeList commonTags = m_dom.elementsByTagName("CommonTags");
+    for (int i = 0; i < commonTags.count(); i++) {
+        QDomNodeList commonTagsItems = commonTags.item(i).toElement().childNodes();
+        for (int j = 0; j < commonTagsItems.count(); j++) {
+            QDomElement element = commonTagsItems.item(j).toElement();
+            m_commonTagList.append(element.text());
+            QTreeWidgetItem *item = new QTreeWidgetItem(QStringList(element.text()));
+            ui->treeWidgetCommon->addTopLevelItem(item);
+        }
+    }
+
+    ui->treeWidgetLocation->clear();
+    QDomNodeList locationTags = m_dom.elementsByTagName("LocationTags");
+    for (int i = 0; i < locationTags.count(); i++) {
+        QDomNodeList countries = locationTags.item(i).toElement().elementsByTagName("country");
+        QTreeWidgetItem *item = NULL;
+        for (int j = 0; j < countries.count(); j++) {
+            QDomNodeList countryNames = countries.item(j).toElement().elementsByTagName("name");
+            if (countryNames.count() < 1)
+                continue;
+
+            item = new QTreeWidgetItem(QStringList(countryNames.item(0).toElement().text()));
+            ui->treeWidgetLocation->addTopLevelItem(item);
+
+            QDomNodeList cities = countries.item(j).toElement().elementsByTagName("city");
+            for (int k = 0; k < cities.count(); k++) {
+                QDomNodeList cityNames = cities.item(k).toElement().elementsByTagName("name");
+                if (cityNames.count() < 1)
+                    continue;
+
+                QTreeWidgetItem *itemLV2 = new QTreeWidgetItem(QStringList(cityNames.item(0).toElement().text()));
+                item->addChild(itemLV2);
+
+                QDomNodeList places = cities.item(k).toElement().elementsByTagName("place");
+                for (int l = 0; l < places.count(); l++) {
+                    QDomNodeList placeNames = places.item(l).toElement().elementsByTagName("name");
+                    if (placeNames.count() < 1)
+                        continue;
+
+                    itemLV2->addChild(new QTreeWidgetItem(QStringList(placeNames.item(0).toElement().text())));
+                }
+            }
+        }
+    }
+
+    ui->treeWidgetActivity->clear();
+    QDomNodeList activitiesTags = m_dom.elementsByTagName("ActivitiesTags");
+    for (int i = 0; i < activitiesTags.count(); i++) {
+        QDomNodeList activities = activitiesTags.item(i).toElement().elementsByTagName("activity");
+        QTreeWidgetItem *item = NULL;
+        for (int j = 0; j < activities.count(); j++) {
+            QDomNodeList activityNames = activities.item(j).toElement().elementsByTagName("name");
+            if (activityNames.count() < 1)
+                continue;
+
+            item = new QTreeWidgetItem(QStringList(activityNames.item(0).toElement().text()));
+            ui->treeWidgetActivity->addTopLevelItem(item);
+        }
+    }
+
+    InitializeWorksTagsTreeByDB();
+}
+
+void ACGTagGenerator::InitializeWorksTagsTreeByXML()
 {
     ui->treeWidgetWork->clear();
     ui->comboBoxWork->clear();
@@ -158,6 +233,30 @@ void ACGTagGenerator::InitializeWorksTagsTree()
                     continue;
 
                 QTreeWidgetItem *itemLV2 = new QTreeWidgetItem(QStringList(charNames.item(0).toElement().text()));
+                item->addChild(itemLV2);
+            }
+        }
+    }
+}
+
+void ACGTagGenerator::InitializeWorksTagsTreeByDB()
+{
+    ui->treeWidgetWork->clear();
+    ui->comboBoxWork->clear();
+
+    QStringList acgList;
+    if (!m_ACGDB->QueryAllACGList(acgList))
+        return;
+
+    for (int i = 0; i < acgList.count(); i++) {
+        QTreeWidgetItem *item = new QTreeWidgetItem(QStringList(acgList.at(i)));
+        ui->treeWidgetWork->addTopLevelItem(item);
+        ui->comboBoxWork->addItem(acgList.at(i));
+
+        QStringList charList;
+        if (m_ACGDB->QueryCharactersByACG(acgList.at(i), charList)) {
+            for (int j = 0; j < charList.count(); j++) {
+                QTreeWidgetItem *itemLV2 = new QTreeWidgetItem(QStringList(charList.at(j)));
                 item->addChild(itemLV2);
             }
         }
@@ -316,6 +415,48 @@ bool ACGTagGenerator::UpdateWorkCharComboBox(bool bWork)
     return true;
 }
 
+bool ACGTagGenerator::UpdateWorkCharComboBoxByDB(bool bWork)
+{
+    if (bWork) {
+        ui->comboBoxChar->clear();
+
+        QStringList acgAliasList;
+        QStringList acgFieldList;
+        if (m_ACGDB->QueryACG(ui->comboBoxWork->currentText(), acgAliasList, acgFieldList)) {
+            int rowCounter = 0;
+            for (int i = 0; i < acgAliasList.count(); i++) {
+                ui->tableWidgetWork->setItem(rowCounter++, 0, new QTableWidgetItem(acgAliasList.at(i)));
+            }
+
+            QStringList charList;
+            if (m_ACGDB->QueryCharactersByACG(ui->comboBoxWork->currentText(), charList)) {
+                for (int j = 0; j < charList.count(); j++) {
+                    ui->comboBoxChar->addItem(charList.at(j));
+                }
+            } else
+                return false;
+        } else
+            return false;
+    } else {
+        QStringList acgFieldList;
+        QStringList acgAliasList;
+        QStringList charFieldList;
+        QStringList charAliasList;
+
+        if (m_ACGDB->QueryCharacter(ui->comboBoxChar->currentText(),
+                                charAliasList, acgAliasList,
+                                charFieldList, acgFieldList)) {
+            int rowCounter = 0;
+            for (int i = 1; i < charAliasList.count(); i++) { // charAliasList.at(0) is ACG ID. Ignore it.
+                ui->tableWidgetChar->setItem(rowCounter++, 0, new QTableWidgetItem(charAliasList.at(i)));
+            }
+        } else
+            return false;
+    }
+
+    return true;
+}
+
 bool ACGTagGenerator::findTargetNode(QDomDocument &dom, const QString &tag, const QString &targetTag, QDomNode &targetNode)
 {
     QDomNodeList list = dom.elementsByTagName(tag);
@@ -432,7 +573,7 @@ void ACGTagGenerator::on_spinBox_editingFinished()
 void ACGTagGenerator::on_comboBoxChar_currentTextChanged(const QString &arg1)
 {
     ui->tableWidgetChar->clear();
-    if (!this->UpdateWorkCharComboBox(false))
+    if (!this->UpdateWorkCharComboBoxByDB(false))
         if (!arg1.isEmpty())
              ui->tableWidgetChar->setItem(0, 0, new QTableWidgetItem(arg1));
 }
@@ -543,13 +684,13 @@ void ACGTagGenerator::on_pushButtonApply_clicked()
         file->close();
     }
 
-    this->InitializeWorksTagsTree();
+    this->InitializeWorksTagsTreeByXML();
 }
 
 void ACGTagGenerator::on_comboBoxWork_currentTextChanged(const QString &arg1)
 {
     ui->tableWidgetWork->clear();
-    if (!this->UpdateWorkCharComboBox())
+    if (!this->UpdateWorkCharComboBoxByDB())
         if (!arg1.isEmpty())
              ui->tableWidgetWork->setItem(0, 0, new QTableWidgetItem(arg1));
 }
@@ -563,7 +704,7 @@ void ACGTagGenerator::on_pushButtonOpen_clicked()
         m_TagXmlFileName = fileName;
     }
 
-    Initialize();
+    InitializeByDB();
     ui->plainTextEdit->clear();
 }
 
@@ -1033,6 +1174,30 @@ bool CACGDB::AddCharacter(int workId, QStringList &aliasList)
     return QueryDB(sqlCmd);
 }
 
+bool CACGDB::QueryCharactersByACG(const QString &name, QStringList &charList)
+{
+    int acgID = ACGID_INVALID;
+    if (!IsACGExist(name, acgID))
+        return false;
+
+    if (acgID == ACGID_INVALID)
+        return false;
+
+    QString sqlCmd = QString("SELECT %1.NAME0 FROM %1, %2 WHERE %1.ACG = %2.ID AND %2.ID = %3").arg(m_charTableName).arg(m_acgTableName).arg(acgID);
+    QSqlQuery requester;
+    if (QueryDB(sqlCmd, requester)) {
+        QSqlRecord rec = requester.record();
+        for (int r = 0; requester.next(); r++) {
+            for (int c = 0; c < rec.count(); c++) {
+                qDebug() << requester.value(c).toString();
+                charList.push_back(requester.value(c).toString());
+            }
+        }
+    } else
+        return false;
+
+    return true;
+}
 
 
 void ACGTagGenerator::on_pushButton_2_clicked()

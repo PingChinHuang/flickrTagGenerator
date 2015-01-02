@@ -104,6 +104,8 @@ public:
     bool RemoveACG(const QString& name);
     bool ModifyACG(QStringList& aliasList);
     bool QueryAllACGList(QStringList &acgList);
+
+    bool QueryCharactersByACG(const QString &name, QStringList &charList);
 };
 
 class ACGTagGenerator : public QWidget
@@ -123,15 +125,18 @@ private:
     DatabaseDialog m_dbDialog;
 
 public:
-    void Initialize();
+    void InitializeByXML();
+    void InitializeByDB();
     bool UpdateWorkCharComboBox(bool bWork = true);
+    bool UpdateWorkCharComboBoxByDB(bool bWork = true);
     bool findTargetNode(QDomDocument &dom, const QString &tag, const QString &targetTag, QDomNode &targetNode);
     void traverseParent(QDomNode &targetNode, QString &output);
     bool createNewCharNode(QDomNode &newChar);
     bool addWorkNameNode(QDomNode &targetNode);
 
 private:
-    void InitializeWorksTagsTree();
+    void InitializeWorksTagsTreeByXML();
+    void InitializeWorksTagsTreeByDB();
     void TransferXMLtoDatabase();
     void clearCurrentDom();
 
