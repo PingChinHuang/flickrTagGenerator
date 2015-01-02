@@ -213,22 +213,6 @@
    <property name="flat">
     <bool>true</bool>
    </property>
-   <widget class="QPushButton" name="pushButtonApply">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>320</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Save</string>
-    </property>
-   </widget>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
@@ -477,18 +461,41 @@
      </item>
     </layout>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
-      <x>350</x>
+      <x>280</x>
       <y>320</y>
-      <width>75</width>
-      <height>23</height>
+      <width>239</width>
+      <height>25</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Test2</string>
-    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <item>
+      <widget class="QPushButton" name="pushButtonXMLtoDB">
+       <property name="text">
+        <string>Xml2DB</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="text">
+        <string>DB Overview</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonApply">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>Save</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <zorder>groupBox</zorder>

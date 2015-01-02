@@ -1,11 +1,15 @@
 #ifndef ACGTAGGENERATOR_H
 #define ACGTAGGENERATOR_H
 
+#include "databasedialog.h"
+
 #include <QWidget>
 #include <QStringList>
 #include <QDomDocument>
 #include <QtSql/QtSql>
 #include <QMutex>
+
+#define ACGID_INVALID (-1)
 
 namespace Ui {
 class ACGTagGenerator;
@@ -50,7 +54,7 @@ public:
     void CloseDB();
     bool CreateTable(const QString& name, struct DBTableDefinition& definition);
     bool QueryDB(const QString& query);
-    bool QueryDB(const QString& query, QSqlQuery& requester);
+    bool QueryDB(const QString& query, QSqlQuery &requester);
 };
 
 /*class CWorkDB: public CDBControl {
@@ -86,16 +90,20 @@ public:
     bool IsWorkable();
 
     bool IsCharacterExist(const QString& name, QString& queryResult);
-    bool QueryCharacter(const QString& name, QStringList& charAliasList, QStringList& workAliasList);
+    bool QueryCharacter(const QString& name,
+                        QStringList& charAliasList, QStringList& workAliasList,
+                        QStringList &charFieldList, QStringList &workFieldList);
     bool AddCharacter(int workId, QStringList& aliasList);
     bool RemoveCharacter(const QString& name);
     bool ModifyCharacter(QStringList& aliasList);
+    bool QueryAllCharacterList(QStringList &charList);
 
     bool IsACGExist(const QString &name, int &acgID);
-    bool QueryACG(const QString& name);
+    bool QueryACG(const QString& name, QStringList &aliasList, QStringList &fieldList);
     bool AddACG(QStringList& aliasList);
     bool RemoveACG(const QString& name);
     bool ModifyACG(QStringList& aliasList);
+    bool QueryAllACGList(QStringList &acgList);
 };
 
 class ACGTagGenerator : public QWidget
@@ -112,6 +120,7 @@ private:
     QDomDocument m_dom;
     QString m_TagXmlFileName;
     CACGDB *m_ACGDB;
+    DatabaseDialog m_dbDialog;
 
 public:
     void Initialize();
@@ -123,6 +132,7 @@ public:
 
 private:
     void InitializeWorksTagsTree();
+    void TransferXMLtoDatabase();
     void clearCurrentDom();
 
 private slots:
@@ -135,6 +145,7 @@ private slots:
     void on_comboBoxWork_currentTextChanged(const QString &arg1);
     void on_pushButtonOpen_clicked();
     void on_pushButton_2_clicked();
+    void on_pushButtonXMLtoDB_clicked();
 };
 
 #endif // ACGTAGGENERATOR_H

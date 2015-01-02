@@ -13,10 +13,13 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        acgtaggenerator.cpp
+        acgtaggenerator.cpp \
+    databasedialog.cpp
 
-HEADERS  += acgtaggenerator.h
+HEADERS  += acgtaggenerator.h \
+    databasedialog.h
 
-FORMS    += acgtaggenerator.ui
+FORMS    += acgtaggenerator.ui \
+    databasedialog.ui
 
 QTPLUGIN += qsqlite
