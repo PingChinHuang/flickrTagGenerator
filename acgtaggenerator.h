@@ -71,9 +71,11 @@ class CACGDB : public CDBControl {
 private:
     QString         m_acgTableName;
     QString         m_charTableName;
+    QString         m_activityTableName;
 
     bool            m_hasACGTable;
     bool            m_hasCharTable;
+    bool            m_hasActivityTable;
     bool            m_isWorkable;
     QMutex          m_isWorkableLock;
 
@@ -82,6 +84,7 @@ private:
 
     bool CreateACGTable();
     bool CreateCharTable();
+    bool CreateActivityTable();
 
 public:
     explicit CACGDB(const QString& dbPath, const QString &dbType);
@@ -105,6 +108,13 @@ public:
     bool ModifyACG(QStringList& aliasList);
     bool QueryAllACGList(QStringList &acgList);
 
+    bool IsActivityExist(const QString &name, int &id);
+    bool QueryActivity(const QString &name, QStringList &aliasList, QStringList &fieldList);
+    bool AddActivity(QStringList &aliasList);
+    bool RemoveActivity(QStringList &aliasList);
+    bool ModifyActivity(QStringList &aliasList);
+    bool QueryAllActivityList(QStringList &list);
+
     bool QueryCharactersByACG(const QString &name, QStringList &charList);
 };
 
@@ -123,6 +133,7 @@ private:
     QString m_TagXmlFileName;
     CACGDB *m_ACGDB;
     DatabaseDialog m_dbDialog;
+    bool m_useDB;
 
 public:
     void InitializeByXML();

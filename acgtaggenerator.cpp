@@ -367,6 +367,57 @@ void ACGTagGenerator::TransferXMLtoDatabase()
         }
     }
 
+    QDomNodeList activitiesTags = m_dom.elementsByTagName("ActivitiesTags");
+    for (int i = 0; i < activitiesTags.count(); i++) {
+        QDomNodeList activities = activitiesTags.item(i).toElement().elementsByTagName("activity");
+        for (int j = 0; j < activities.count(); j++) {
+            QDomNodeList activityNames = activities.item(j).toElement().elementsByTagName("name");
+            if (activityNames.count() < 1)
+                continue;
+
+            QStringList activityAliasList;
+            bool bActivityExist = false;
+            int id = ACGID_INVALID;
+            for (int k = 0; k < activityNames.count(); k++) {
+                if (!activityNames.item(k).toElement().text().isEmpty()) {
+                    if (m_ACGDB->IsActivityExist(activityNames.item(k).toElement().text(), id)) {
+                        if (id > ACGID_INVALID) {
+                                bActivityExist = true;
+                                break;
+                            }
+                        }
+
+                        activityAliasList.push_back(activityNames.item(k).toElement().text());
+                    }
+            }
+
+            if (!bActivityExist) {
+                if (m_ACGDB->AddActivity(activityAliasList)) {
+                    id = -1;
+                    if (m_ACGDB->IsActivityExist(activityAliasList.at(0), id)) {
+                        if (id <= ACGID_INVALID) {
+                            QMessageBox msgBox(QMessageBox::Warning,
+                                               "Error",
+                                               QString("Activity %1 cannot add into the database.").arg(activityAliasList.at(0)),
+                                               QMessageBox::Ok,
+                                               NULL);
+                            msgBox.exec();
+                            continue;
+                        }
+                    }
+                } else {
+                    QMessageBox msgBox(QMessageBox::Warning,
+                                       "Error",
+                                       QString("Activity %1 cannot add into the database.").arg(activityAliasList.at(0)),
+                                       QMessageBox::Ok,
+                                       NULL);
+                    msgBox.exec();
+                    continue;
+                }
+            }
+        }
+    }
+
     QMessageBox msgBox(QMessageBox::Information,
                        "Infomation",
                        "Transfer XML to Database finished!",
@@ -844,7 +895,8 @@ void ACGTagGenerator::on_comboBoxWork_currentTextChanged(const QString &arg1)
 
 void ACGTagGenerator::on_pushButtonOpen_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Tag XML"), "./", tr("XML Files (*.xml *.XML);;All Files (*.*)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Tag XML or Database"), "./",
+                                                    tr("XML Files (*.xml *.XML);;SQLite Database Files (*.sqlite);;All Files (*.*)"));
 
     if (fileName != m_TagXmlFileName) {
         clearCurrentDom();
@@ -999,15 +1051,18 @@ bool CDBControl::GetTableList(QStringList& tableList)
 CACGDB::CACGDB (const QString &dbPath, const QString& dbType)
     : CDBControl(dbPath, dbType),
       m_acgTableName("ACG"),
-      m_charTableName("Character")
+      m_charTableName("Character"),
+      m_activityTableName("Activity")
 {
     QStringList tableList;
     if (GetTableList(tableList) && !tableList.empty()) {
-        for (int i = 0; i < tableList.count() && (!m_hasACGTable || !m_hasCharTable); i++) {
+        for (int i = 0; i < tableList.count() && (!m_hasACGTable || !m_hasCharTable || !m_hasActivityTable); i++) {
             if (tableList.at(i) == m_acgTableName)
                 m_hasACGTable = true;
             else if (tableList.at(i) == m_charTableName)
                 m_hasCharTable = true;
+            else if (tableList.at(i) == m_activityTableName)
+                m_hasActivityTable = true;
         }
     }
 
@@ -1016,6 +1071,9 @@ CACGDB::CACGDB (const QString &dbPath, const QString& dbType)
 
     if (!m_hasCharTable)
         m_hasCharTable = CreateCharTable();
+
+    if (!m_hasActivityTable)
+        m_hasActivityTable = CreateActivityTable();
 
     //m_isWorkable = IsOpen();
 }
@@ -1050,6 +1108,28 @@ bool CACGDB::CreateACGTable()
     }
 
     return CreateTable(m_acgTableName, definition);
+}
+
+bool CACGDB::CreateActivityTable()
+{
+    struct DBTableDefinition definition;
+
+    definition.fieldNames.push_back("ID");
+    definition.fieldTypes.push_back("INTEGER");
+    definition.fieldForeign.push_back(false);
+    definition.fieldUnique.push_back(false);
+    definition.fieldPrimary = 0;
+    for (int i = 0; i < 5; i++) {
+        definition.fieldNames.push_back(QString("NAME%1").arg(i));
+        definition.fieldTypes.push_back("TEXT");
+        if (i == 0)
+            definition.fieldUnique.push_back(true);
+        else
+            definition.fieldUnique.push_back(false);
+        definition.fieldForeign.push_back(false);
+    }
+
+    return CreateTable(m_activityTableName, definition);
 }
 
 bool CACGDB::CreateCharTable()
@@ -1091,7 +1171,7 @@ bool CACGDB::IsACGExist(const QString &name, int& acgID)
 
     for (int i = 0; i < 10; i++) {
         condition += QString("NAME%1 = \"%2\"").arg(i).arg(name);
-        if (i != 9)
+        if (i < 9)
             condition += " OR ";
     }
 
@@ -1099,6 +1179,29 @@ bool CACGDB::IsACGExist(const QString &name, int& acgID)
     if (ret = QueryDB(sqlCmd, requester)) {
         for (int r = 0; requester.next(); r++) {
             acgID = requester.value(0).toInt();
+        }
+    }
+
+    return ret;
+}
+
+bool CACGDB::IsActivityExist(const QString &name, int &id)
+{
+    QString sqlCmd = QString("SELECT ID FROM %1 WHERE ").arg(m_activityTableName);
+    QString condition;
+    QSqlQuery requester;
+    bool ret;
+
+    for (int i = 0; i < 5; i++) {
+        condition += QString("NAME%1 = \"%2\"").arg(i).arg(name);
+        if (i < 4)
+            condition += " OR ";
+    }
+
+    sqlCmd += condition;
+    if (ret = QueryDB(sqlCmd, requester)) {
+        for (int r = 0; requester.next(); r++) {
+            id = requester.value(0).toInt();
         }
     }
 
@@ -1181,7 +1284,7 @@ bool CACGDB::QueryACG(const QString &name, QStringList &aliasList, QStringList &
     for (int i = 0; i < 10; i ++) {
         queryACGFields += QString("%1").arg(QString("NAME%1").arg(i));
 
-        if (i != 9) {
+        if (i < 9) {
             queryACGFields += ", ";
         }
     }
@@ -1189,6 +1292,41 @@ bool CACGDB::QueryACG(const QString &name, QStringList &aliasList, QStringList &
     queryConditions = QString("NAME0 = \"%1\"").arg(name);
 
     sqlCmd = QString("SELECT %1 FROM %2 WHERE %3").arg(queryACGFields).arg(m_acgTableName).arg(queryConditions);
+    if (ret = QueryDB(sqlCmd, requester)) {
+        QSqlRecord rec = requester.record();
+        for (int c = 0; c < rec.count(); c++) {
+                fieldList.push_back(rec.fieldName(c));
+        }
+
+        for (int r = 0; requester.next(); r++) {
+            for (int c = 0; c < rec.count(); c++) {
+                aliasList.push_back(requester.value(c).toString());
+            }
+        }
+    }
+
+    return ret;
+}
+
+bool CACGDB::QueryActivity(const QString &name, QStringList &aliasList, QStringList &fieldList)
+{
+    QString queryFields;
+    QString queryConditions;
+    QString sqlCmd;
+    QSqlQuery requester;
+    bool ret;
+
+    for (int i = 0; i < 5; i ++) {
+        queryFields += QString("%1").arg(QString("NAME%1").arg(i));
+
+        if (i < 4) {
+            queryFields += ", ";
+        }
+    }
+
+    queryConditions = QString("NAME0 = \"%1\"").arg(name); // FIXME: May need check all NAMEn fields.
+
+    sqlCmd = QString("SELECT %1 FROM %2 WHERE %3").arg(queryFields).arg(m_activityTableName).arg(queryConditions);
     if (ret = QueryDB(sqlCmd, requester)) {
         QSqlRecord rec = requester.record();
         for (int c = 0; c < rec.count(); c++) {
@@ -1215,6 +1353,23 @@ bool CACGDB::QueryAllACGList(QStringList &acgList)
         for (int r = 0; requester.next(); r++) {
             for (int c = 0; c < rec.count(); c++) {
                 acgList.push_back(requester.value(c).toString());
+            }
+        }
+    }
+
+    return ret;
+}
+
+bool CACGDB::QueryAllActivityList(QStringList &list)
+{
+    QString sqlCmd = QString("SELECT NAME0 FROM %1").arg(m_activityTableName);
+    QSqlQuery requester;
+    bool ret = false;
+    if (ret = QueryDB(sqlCmd, requester)) {
+        QSqlRecord rec = requester.record();
+        for (int r = 0; requester.next(); r++) {
+            for (int c = 0; c < rec.count(); c++) {
+                list.push_back(requester.value(c).toString());
             }
         }
     }
@@ -1250,6 +1405,44 @@ bool CACGDB::AddACG(QStringList &aliasList)
             insertValues += "\"\"";
 
         if (i < 9)
+            insertValues += ", ";
+        else
+            insertValues += ")";
+    }
+
+    sqlCmd += insertFields;
+    sqlCmd += insertValues;
+    return QueryDB(sqlCmd);
+}
+
+bool CACGDB::AddActivity(QStringList &aliasList)
+{
+    //QMutexLocker _l(&m_isWorkableLock);
+    //if (!m_isWorkable)
+    //    return false;
+
+    if (!m_hasActivityTable)
+        if (!(m_hasActivityTable = CreateActivityTable()))
+            return false;
+
+    QString sqlCmd = QString("INSERT INTO %1 ").arg(m_activityTableName);
+    QString insertFields = "(";
+    QString insertValues = " VALUES (";
+
+    for (int i = 0; i < 5; i++) {
+        if (i < 4)
+            insertFields += QString("NAME%1, ").arg(i);
+        else
+            insertFields += QString("NAME%1)").arg(i);
+    }
+
+    for (int i = 0; i < 5; i++) {
+        if (i < aliasList.count())
+            insertValues += QString("\"%1\"").arg(aliasList.at(i));
+        else
+            insertValues += "\"\"";
+
+        if (i < 4)
             insertValues += ", ";
         else
             insertValues += ")";
@@ -1367,6 +1560,28 @@ bool CACGDB::ModifyACG(QStringList &aliasList)
     return QueryDB(sqlCmd);
 }
 
+bool CACGDB::ModifyActivity(QStringList &aliasList)
+{
+    if (aliasList.isEmpty())
+        return false;
+
+    QString sqlCmd;
+    QString setFields;
+    QString condition;
+
+    for (int i = 0; i < aliasList.count() && i < 5; i++) {
+        setFields += QString("NAME%1 = \"%2\"").arg(i).arg(aliasList.at(i));
+        condition += QString("NAME%1 = \"%2\"").arg(i).arg(aliasList.at(0));
+        if (i < aliasList.count() - 1 || i < 4) {
+            setFields += ", ";
+            condition += " OR ";
+        }
+    }
+
+    sqlCmd = QString("UPDATE %1 SET %2 WHERE %3").arg(m_activityTableName).arg(setFields).arg(condition);
+    return QueryDB(sqlCmd);
+}
+
 bool CACGDB::ModifyCharacter(int acgID, QStringList &aliasList)
 {
     if (acgID <= ACGID_INVALID)
@@ -1418,6 +1633,17 @@ void ACGTagGenerator::on_pushButton_2_clicked()
                                 charAliasList, acgAliasList,
                                 charFieldList, acgFieldList);
         m_dbDialog.SetCharacterTable(charFieldList, charAliasList);
+    }
+
+    QStringList activityList;
+    m_ACGDB->QueryAllActivityList(activityList);
+    m_dbDialog.ClearActivityTable();
+    for (int i = 0; i < activityList.count(); i++) {
+        QStringList fieldList;
+        QStringList aliasList;
+
+        m_ACGDB->QueryActivity(activityList.at(i), aliasList, fieldList);
+        m_dbDialog.SetActivityTable(fieldList, aliasList);
     }
 
     m_dbDialog.exec();

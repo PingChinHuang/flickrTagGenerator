@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>699</width>
-    <height>446</height>
+    <height>636</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,10 +16,10 @@
   <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>10</y>
+     <x>11</x>
+     <y>11</y>
      <width>681</width>
-     <height>431</height>
+     <height>619</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -51,6 +51,18 @@
       <column/>
       <column/>
       <column/>
+      <column/>
+      <column/>
+      <column/>
+      <column/>
+      <column/>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTableWidget" name="tableWidget_activity">
+      <property name="columnCount">
+       <number>5</number>
+      </property>
       <column/>
       <column/>
       <column/>

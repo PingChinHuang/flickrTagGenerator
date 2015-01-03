@@ -26,6 +26,12 @@ void DatabaseDialog::ClearCharacterTable()
     ui->tableWidget_characters->setRowCount(0);
 }
 
+void DatabaseDialog::ClearActivityTable()
+{
+    ui->tableWidget_activity->clear();
+    ui->tableWidget_activity->setRowCount(0);
+}
+
 void DatabaseDialog::SetACGTable(QStringList &fieldList, QStringList &aliasList)
 {
     ui->tableWidget_acg->setHorizontalHeaderLabels(fieldList);
@@ -41,6 +47,15 @@ void DatabaseDialog::SetCharacterTable(QStringList &fieldList, QStringList &alia
     ui->tableWidget_characters->insertRow(ui->tableWidget_characters->rowCount());
     for (int i = 0; i < aliasList.count(); i++) {
         ui->tableWidget_characters->setItem(ui->tableWidget_characters->rowCount() - 1, i, new QTableWidgetItem(aliasList.at(i)));
+    }
+}
+
+void DatabaseDialog::SetActivityTable(QStringList &fieldList, QStringList &aliasList)
+{
+    ui->tableWidget_activity->setHorizontalHeaderLabels(fieldList);
+    ui->tableWidget_activity->insertRow(ui->tableWidget_activity->rowCount());
+    for (int i = 0; i < aliasList.count(); i++) {
+        ui->tableWidget_activity->setItem(ui->tableWidget_activity->rowCount() - 1, i, new QTableWidgetItem(aliasList.at(i)));
     }
 }
 
