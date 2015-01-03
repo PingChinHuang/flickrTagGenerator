@@ -95,7 +95,7 @@ public:
                         QStringList &charFieldList, QStringList &workFieldList);
     bool AddCharacter(int workId, QStringList& aliasList);
     bool RemoveCharacter(const QString& name);
-    bool ModifyCharacter(QStringList& aliasList);
+    bool ModifyCharacter(int acgID, QStringList& aliasList);
     bool QueryAllCharacterList(QStringList &charList);
 
     bool IsACGExist(const QString &name, int &acgID);
