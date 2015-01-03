@@ -148,11 +148,15 @@ public:
 private:
     void InitializeWorksTagsTreeByXML();
     void InitializeWorksTagsTreeByDB();
+    void InitializeActivityTreeByXML();
+    void InitializeActivityTreeByDB();
     void TransferXMLtoDatabase();
     void clearCurrentDom();
 
     void GetACGCharOutputByXML(QString &output);
     void GetACGCharOutputByDB(QString &output);
+    void GetActivityOutputByXML(QString &output);
+    void GetActivityOutputByDB(QString &output);
 
 private slots:
     void on_pushButton_clicked();

@@ -103,21 +103,8 @@ void ACGTagGenerator::InitializeByXML()
         }
     }
 
-    ui->treeWidgetActivity->clear();
-    QDomNodeList activitiesTags = m_dom.elementsByTagName("ActivitiesTags");
-    for (int i = 0; i < activitiesTags.count(); i++) {
-        QDomNodeList activities = activitiesTags.item(i).toElement().elementsByTagName("activity");
-        QTreeWidgetItem *item = NULL;
-        for (int j = 0; j < activities.count(); j++) {
-            QDomNodeList activityNames = activities.item(j).toElement().elementsByTagName("name");
-            if (activityNames.count() < 1)
-                continue;
 
-            item = new QTreeWidgetItem(QStringList(activityNames.item(0).toElement().text()));
-            ui->treeWidgetActivity->addTopLevelItem(item);
-        }
-    }
-
+    InitializeActivityTreeByXML();
     InitializeWorksTagsTreeByXML();
 }
 
@@ -178,6 +165,12 @@ void ACGTagGenerator::InitializeByDB()
         }
     }
 
+    InitializeActivityTreeByDB();
+    InitializeWorksTagsTreeByDB();
+}
+
+void ACGTagGenerator::InitializeActivityTreeByXML()
+{
     ui->treeWidgetActivity->clear();
     QDomNodeList activitiesTags = m_dom.elementsByTagName("ActivitiesTags");
     for (int i = 0; i < activitiesTags.count(); i++) {
@@ -192,8 +185,19 @@ void ACGTagGenerator::InitializeByDB()
             ui->treeWidgetActivity->addTopLevelItem(item);
         }
     }
+}
 
-    InitializeWorksTagsTreeByDB();
+void ACGTagGenerator::InitializeActivityTreeByDB()
+{
+    ui->treeWidgetActivity->clear();
+    QStringList list;
+    if (!m_ACGDB->QueryAllActivityList(list))
+        return;
+
+    for (int i = 0; i < list.count(); i++) {
+        QTreeWidgetItem *item = new QTreeWidgetItem(QStringList(list.at(i)));
+        ui->treeWidgetActivity->addTopLevelItem(item);
+    }
 }
 
 void ACGTagGenerator::InitializeWorksTagsTreeByXML()
@@ -642,17 +646,42 @@ void ACGTagGenerator::GetACGCharOutputByXML(QString &output)
      }
 }
 
-void ACGTagGenerator::on_pushButton_clicked()
+void ACGTagGenerator::GetActivityOutputByXML(QString &output)
 {
-    QTreeWidgetItem *itemPlace = ui->treeWidgetLocation->currentItem();
     QTreeWidgetItem *itemActivity = ui->treeWidgetActivity->currentItem();
-    QString output;
-
     if (itemActivity != NULL) {
         QDomNode targetNode;
         findTargetNode(m_dom, "ActivitiesTags", itemActivity->text(0), targetNode);
         traverseParent(targetNode, output);
     }
+}
+
+void ACGTagGenerator::GetActivityOutputByDB(QString &output)
+{
+    QTreeWidgetItem *itemActivity = ui->treeWidgetActivity->currentItem();
+    if (itemActivity != NULL) {
+        QStringList fieldList;
+        QStringList aliasList;
+
+        if (m_ACGDB->QueryActivity(itemActivity->text(0), aliasList, fieldList)) {
+            for (int i = 0; i < aliasList.count() && !aliasList.at(i).isEmpty(); i++) {
+                if (ui->spinBox->value() > -1)
+                    output += QString("\"%1%2\" ").arg(aliasList.at(i)).arg(ui->spinBox->value());
+                else
+                    output += QString("\"%1\" ").arg(aliasList.at(i));
+            }
+        } else
+            return;
+    }
+}
+
+void ACGTagGenerator::on_pushButton_clicked()
+{
+    QTreeWidgetItem *itemPlace = ui->treeWidgetLocation->currentItem();
+    QString output;
+
+    //GetActivityOutputByXML(output);
+    GetActivityOutputByDB(output);
 
     if (itemPlace != NULL) {
         QDomNode targetNode;
