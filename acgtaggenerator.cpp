@@ -1616,7 +1616,7 @@ bool CACGDB::ModifyCharacter(int acgID, QStringList &aliasList)
     if (acgID <= ACGID_INVALID)
         return false;
 
-    if (aliasList.count())
+    if (aliasList.isEmpty())
         return false;
 
     QString sqlCmd;
