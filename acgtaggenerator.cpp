@@ -21,6 +21,14 @@ ACGTagGenerator::ACGTagGenerator(QWidget *parent) :
     q.setColor(QPalette::Background, QColor(Qt::white));
     setPalette(q);
 
+    QAction *treeAction;
+    treeAction = new QAction(tr("delete"), this);
+    treeAction->setSeparator(false);
+    connect(treeAction, SIGNAL(triggered()), this, SLOT(on_actionTriggered()));
+
+    ui->treeWidgetWork->addAction(treeAction);
+    ui->treeWidgetWork->setContextMenuPolicy(Qt::ActionsContextMenu);
+
     connect(ui->treeWidgetActivity, SIGNAL(itemSelectionChanged()),
             this, SLOT(on_itemSelectionChanged()));
     connect(ui->treeWidgetLocation, SIGNAL(itemSelectionChanged()),
@@ -34,6 +42,22 @@ ACGTagGenerator::~ACGTagGenerator()
     clearCurrentDom();
     delete m_ACGDB;
     delete ui;
+}
+
+void ACGTagGenerator::on_actionTriggered()
+{
+    qDebug() << "action test";
+    QMessageBox msgBox(QMessageBox::Question,
+                       "Confirm",
+                       QString("%1 will be removed from the database.").arg(ui->treeWidgetWork->currentItem()->text(0)),
+                       QMessageBox::Yes | QMessageBox::No,
+                       NULL);
+
+    if (msgBox.exec() == QMessageBox::No)
+        return;
+
+    m_ACGDB->RemoveCharacter(ui->treeWidgetWork->currentItem()->text(0));
+    InitializeWorksTagsTreeByDB();
 }
 
 void ACGTagGenerator::clearCurrentDom()
@@ -678,7 +702,7 @@ void ACGTagGenerator::GetActivityOutputByDB(QString &output)
 void ACGTagGenerator::on_pushButton_clicked()
 {
     QTreeWidgetItem *itemPlace = ui->treeWidgetLocation->currentItem();
-    QString output;
+    QString output = "";
 
     //GetActivityOutputByXML(output);
     GetActivityOutputByDB(output);
@@ -830,7 +854,7 @@ void ACGTagGenerator::on_pushButtonApply_clicked()
     } else
         goto query_char_db_failed;
 
-    InitializeByDB();
+    InitializeWorksTagsTreeByDB();
 
     return;
 
@@ -1633,6 +1657,12 @@ bool CACGDB::ModifyCharacter(int acgID, QStringList &aliasList)
     }
 
     sqlCmd = QString("UPDATE %1 SET %2 WHERE %3").arg(m_charTableName).arg(setFields).arg(condition);
+    return QueryDB(sqlCmd);
+}
+
+bool CACGDB::RemoveCharacter(const QString &name)
+{
+    QString sqlCmd = QString("DELETE FROM %1 WHERE NAME0 = \"%2\"").arg(m_charTableName).arg(name);
     return QueryDB(sqlCmd);
 }
 
