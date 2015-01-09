@@ -25,6 +25,7 @@ struct DBTableDefinition {
     QStringList fieldTypes;
     QList<bool> fieldUnique;
     QList<bool> fieldForeign;
+    QList<bool> fieldNotNULL;
     QList<ForeignKeyDefinition> fieldForeignDefinition;
     unsigned    fieldPrimary;
 };

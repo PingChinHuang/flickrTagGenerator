@@ -56,7 +56,11 @@ void ACGTagGenerator::on_actionTriggered()
     if (msgBox.exec() == QMessageBox::No)
         return;
 
-    m_ACGDB->RemoveCharacter(ui->treeWidgetWork->currentItem()->text(0));
+    if (ui->treeWidgetWork->currentItem()->parent() == NULL) {
+        m_ACGDB->RemoveACG(ui->treeWidgetWork->currentItem()->text(0));
+    } else
+        m_ACGDB->RemoveCharacter(ui->treeWidgetWork->currentItem()->text(0));
+
     InitializeWorksTagsTreeByDB();
 }
 
@@ -795,15 +799,23 @@ void ACGTagGenerator::on_pushButtonApply_clicked()
                        QMessageBox::Ok,
                        NULL);
 
+    if (ui->comboBoxWork->currentText().isEmpty())
+        return;
+
     if (m_ACGDB->IsACGExist(ui->comboBoxWork->currentText(), acgID)) {
         QStringList workAliasList;
+        bool hasACG = false;
 
         for (int i = 0; i < ui->tableWidgetWork->rowCount(); i++) {
-            if (NULL != ui->tableWidgetWork->item(i, 0))
+            if (NULL != ui->tableWidgetWork->item(i, 0)) {
+                hasACG = true;
                 workAliasList.push_back(ui->tableWidgetWork->item(i, 0)->text());
-            else
+            } else
                 workAliasList.push_back("");
         }
+
+        if (!hasACG)
+            goto done;
 
         if (acgID <= ACGID_INVALID) {
             if (m_ACGDB->AddACG(workAliasList)) {
@@ -825,15 +837,23 @@ void ACGTagGenerator::on_pushButtonApply_clicked()
         goto query_acg_db_failed;
     }
 
+    if (ui->comboBoxChar->currentText().isEmpty())
+        goto done;
+
     if (m_ACGDB->IsCharacterExist(ui->comboBoxChar->currentText(), queryResult)) {
         QStringList charAliasList;
+        bool hasName = false;
 
         for (int i = 0; i < ui->tableWidgetChar->rowCount(); i++) {
-            if (NULL != ui->tableWidgetChar->item(i, 0))
+            if (NULL != ui->tableWidgetChar->item(i, 0)) {
+                hasName = true;
                 charAliasList.push_back(ui->tableWidgetChar->item(i, 0)->text());
-            else
+            } else
                 charAliasList.push_back("");
         }
+
+        if (!hasName)
+            goto done;
 
         if (queryResult.isEmpty()) {
             if (m_ACGDB->AddCharacter(acgID, charAliasList)) {
@@ -853,6 +873,8 @@ void ACGTagGenerator::on_pushButtonApply_clicked()
         }
     } else
         goto query_char_db_failed;
+
+done:
 
     InitializeWorksTagsTreeByDB();
 
@@ -1664,6 +1686,49 @@ bool CACGDB::RemoveCharacter(const QString &name)
 {
     QString sqlCmd = QString("DELETE FROM %1 WHERE NAME0 = \"%2\"").arg(m_charTableName).arg(name);
     return QueryDB(sqlCmd);
+}
+
+bool CACGDB::RemoveACG(const QString &name)
+{
+    int acg_id = ACGID_INVALID;
+    if (IsACGExist(name, acg_id)) {
+        if (acg_id == ACGID_INVALID) {
+            QMessageBox msgBox(QMessageBox::Warning,
+                               "Error",
+                               QString("Cannot found %1.").arg(name),
+                               QMessageBox::Ok,
+                               NULL);
+
+            msgBox.exec();
+            return false;
+        } else {
+            // Remove ACG's characters
+            QString sqlCmd = QString("DELETE FROM %1 WHERE ACG = %2").arg(m_charTableName).arg(acg_id);
+            if (QueryDB(sqlCmd)) {
+                sqlCmd = QString("DELETE FROM %1 WHERE ID = %2").arg(m_acgTableName).arg(acg_id);
+                if (!QueryDB(sqlCmd)) {
+                    QMessageBox msgBox(QMessageBox::Warning,
+                                       "Error",
+                                       QString("Remove %1 failed.").arg(name),
+                                       QMessageBox::Ok,
+                                       NULL);
+                    return false;
+                }
+            } else {
+                QMessageBox msgBox(QMessageBox::Warning,
+                                   "Error",
+                                   QString("Remove %1's characters failed.").arg(name),
+                                   QMessageBox::Ok,
+                                   NULL);
+
+                msgBox.exec();
+                return false;
+            }
+        }
+    } else
+        return false;
+
+    return true;
 }
 
 void ACGTagGenerator::on_pushButton_2_clicked()
