@@ -25,6 +25,7 @@ struct DBTableDefinition {
     QStringList fieldTypes;
     QList<bool> fieldUnique;
     QList<bool> fieldForeign;
+    QList<bool> fieldNotNULL;
     QList<ForeignKeyDefinition> fieldForeignDefinition;
     unsigned    fieldPrimary;
 };
@@ -169,6 +170,7 @@ private slots:
     void on_pushButtonOpen_clicked();
     void on_pushButton_2_clicked();
     void on_pushButtonXMLtoDB_clicked();
+    void on_actionTriggered();
 };
 
 #endif // ACGTAGGENERATOR_H
