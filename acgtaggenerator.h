@@ -171,6 +171,7 @@ private slots:
     void on_pushButton_2_clicked();
     void on_pushButtonXMLtoDB_clicked();
     void on_actionTriggered();
+    void on_pushButtonReset_clicked();
 };
 
 #endif // ACGTAGGENERATOR_H

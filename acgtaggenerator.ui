@@ -131,6 +131,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="pushButtonReset">
+         <property name="text">
+          <string>Reset</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="pushButtonClear">
          <property name="text">
           <string>Clear</string>

@@ -1798,3 +1798,12 @@ void ACGTagGenerator::on_pushButtonXMLtoDB_clicked()
 
     TransferXMLtoDatabase();
 }
+
+void ACGTagGenerator::on_pushButtonReset_clicked()
+{
+    ui->treeWidgetActivity->setCurrentItem(NULL);
+    ui->treeWidgetLocation->setCurrentItem(NULL);
+    ui->treeWidgetWork->setCurrentItem(NULL);
+    ui->spinBox->setValue(-1);
+    on_pushButtonClear_clicked();
+}
