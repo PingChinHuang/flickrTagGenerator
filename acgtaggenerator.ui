@@ -53,26 +53,33 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>580</y>
+     <y>570</y>
      <width>531</width>
-     <height>121</height>
+     <height>131</height>
     </rect>
    </property>
    <property name="title">
     <string/>
    </property>
-   <widget class="QWidget" name="layoutWidget">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>10</y>
       <width>511</width>
-      <height>104</height>
+      <height>121</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout">
+    <layout class="QVBoxLayout" name="verticalLayout_5">
      <item>
-      <widget class="QPlainTextEdit" name="plainTextEdit"/>
+      <layout class="QHBoxLayout" name="horizontalLayout_7">
+       <item>
+        <widget class="QPlainTextEdit" name="plainTextEdit"/>
+       </item>
+       <item>
+        <widget class="QPlainTextEdit" name="plainTextEdit_2"/>
+       </item>
+      </layout>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -134,6 +141,9 @@
      </item>
     </layout>
    </widget>
+   <zorder>layoutWidget</zorder>
+   <zorder></zorder>
+   <zorder></zorder>
   </widget>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
@@ -461,13 +471,13 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>280</x>
-      <y>320</y>
-      <width>239</width>
-      <height>25</height>
+      <x>240</x>
+      <y>310</y>
+      <width>275</width>
+      <height>29</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_6">
@@ -497,6 +507,22 @@
      </item>
     </layout>
    </widget>
+   <zorder>layoutWidget</zorder>
+   <zorder>layoutWidget</zorder>
+   <zorder>plainTextEdit</zorder>
+   <zorder>plainTextEdit_2</zorder>
+   <zorder></zorder>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>2</width>
+     <height>2</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout"/>
   </widget>
   <zorder>groupBox</zorder>
   <zorder>layoutWidget</zorder>

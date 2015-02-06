@@ -155,7 +155,7 @@ private:
     void clearCurrentDom();
 
     void GetACGCharOutputByXML(QString &output);
-    void GetACGCharOutputByDB(QString &output);
+    void GetACGCharOutputByDB(QString &output, QString &charOutput);
     void GetActivityOutputByXML(QString &output);
     void GetActivityOutputByDB(QString &output);
 

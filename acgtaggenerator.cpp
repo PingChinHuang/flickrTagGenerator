@@ -86,6 +86,7 @@ void ACGTagGenerator::InitializeByXML()
     file->close();
 
     ui->treeWidgetCommon->clear();
+    m_commonTagList.clear();
     QDomNodeList commonTags = m_dom.elementsByTagName("CommonTags");
     for (int i = 0; i < commonTags.count(); i++) {
         QDomNodeList commonTagsItems = commonTags.item(i).toElement().childNodes();
@@ -148,6 +149,7 @@ void ACGTagGenerator::InitializeByDB()
     file->close();
 
     ui->treeWidgetCommon->clear();
+    m_commonTagList.clear();
     QDomNodeList commonTags = m_dom.elementsByTagName("CommonTags");
     for (int i = 0; i < commonTags.count(); i++) {
         QDomNodeList commonTagsItems = commonTags.item(i).toElement().childNodes();
@@ -594,7 +596,7 @@ void ACGTagGenerator::traverseParent(QDomNode &targetNode, QString &output)
     }
 }
 
-void ACGTagGenerator::GetACGCharOutputByDB(QString &output)
+void ACGTagGenerator::GetACGCharOutputByDB(QString &output, QString &charOutput)
 {
     QTreeWidgetItem *itemChar = ui->treeWidgetWork->currentItem();
     if (itemChar != NULL) {
@@ -625,7 +627,7 @@ void ACGTagGenerator::GetACGCharOutputByDB(QString &output)
                         ui->comboBoxWork->setCurrentText(acgAliasList.at(i));
                 }
                 for (int i = 1; i < charAliasList.count() && !charAliasList.at(i).isEmpty(); i++) {
-                    output += QString("\"%1\" ").arg(charAliasList.at(i));
+                    charOutput += QString("\"%1\" ").arg(charAliasList.at(i));
                     if (i == 1)
                         ui->comboBoxChar->setCurrentText(charAliasList.at(i));
                 }
@@ -707,6 +709,7 @@ void ACGTagGenerator::on_pushButton_clicked()
 {
     QTreeWidgetItem *itemPlace = ui->treeWidgetLocation->currentItem();
     QString output = "";
+    QString charOutput = "";
 
     //GetActivityOutputByXML(output);
     GetActivityOutputByDB(output);
@@ -718,12 +721,13 @@ void ACGTagGenerator::on_pushButton_clicked()
     }
 
     //GetACGCharOutputByXML(output);
-    GetACGCharOutputByDB(output);
+    GetACGCharOutputByDB(output, charOutput);
 
     for (int i = 0; i < m_commonTagList.count(); i++) {
         output.append("\"" + m_commonTagList[i] + "\" ");
     }
     ui->plainTextEdit->setPlainText(output);
+    ui->plainTextEdit_2->setPlainText(charOutput);
 }
 
 void ACGTagGenerator::on_itemSelectionChanged()
@@ -734,6 +738,7 @@ void ACGTagGenerator::on_itemSelectionChanged()
 void ACGTagGenerator::on_pushButtonClear_clicked()
 {
     ui->plainTextEdit->clear();
+    ui->plainTextEdit_2->clear();
 }
 
 void ACGTagGenerator::on_spinBox_editingFinished()
