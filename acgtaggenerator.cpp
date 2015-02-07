@@ -598,41 +598,67 @@ void ACGTagGenerator::traverseParent(QDomNode &targetNode, QString &output)
 
 void ACGTagGenerator::GetACGCharOutputByDB(QString &output, QString &charOutput)
 {
-    QTreeWidgetItem *itemChar = ui->treeWidgetWork->currentItem();
-    if (itemChar != NULL) {
-        if (itemChar->parent() == NULL) { // ACG
-            QStringList acgFieldList;
-            QStringList acgAliasList;
+    QList<QTreeWidgetItem *> items = ui->treeWidgetWork->selectedItems();
+    bool bFoundACG = false;
+    QString ACGName = "";
 
-            if (m_ACGDB->QueryACG(itemChar->text(0), acgAliasList, acgFieldList)) {
-                for (int i = 0; i < acgAliasList.count() && !acgAliasList.at(i).isEmpty(); i++) {
-                    output += QString("\"%1\" ").arg(acgAliasList.at(i));
-                    if (i == 0)
-                        ui->comboBoxWork->setCurrentText(acgAliasList.at(i));
-                }
-            } else
-                return;
-        } else { // Character
-            QStringList acgFieldList;
-            QStringList acgAliasList;
-            QStringList charFieldList;
-            QStringList charAliasList;
+    // Multiple selection only show one ACG's characters.
+    for (int i = 0; i < items.size(); i ++) {
+        QTreeWidgetItem *itemChar = items.at(i);
+        qDebug() << items.at(i)->text(0);
 
-            if (m_ACGDB->QueryCharacter(itemChar->text(0),
-                                    charAliasList, acgAliasList,
-                                    charFieldList, acgFieldList)) {
-                for (int i = 0; i < acgAliasList.count() && !acgAliasList.at(i).isEmpty(); i++) {
-                    output += QString("\"%1\" ").arg(acgAliasList.at(i));
-                    if (i == 0)
-                        ui->comboBoxWork->setCurrentText(acgAliasList.at(i));
+        if ( itemChar != NULL) {
+            if (itemChar->parent() == NULL) { // ACG
+                QStringList acgFieldList;
+                QStringList acgAliasList;
+
+                if (bFoundACG) {
+                    continue;
                 }
-                for (int i = 1; i < charAliasList.count() && !charAliasList.at(i).isEmpty(); i++) {
-                    charOutput += QString("\"%1\" ").arg(charAliasList.at(i));
-                    if (i == 1)
-                        ui->comboBoxChar->setCurrentText(charAliasList.at(i));
-                }
-            } else
-                return;
+
+                if (m_ACGDB->QueryACG(itemChar->text(0), acgAliasList, acgFieldList)) {
+                    for (int i = 0; i < acgAliasList.count() && !acgAliasList.at(i).isEmpty(); i++) {
+                        output += QString("\"%1\" ").arg(acgAliasList.at(i));
+                        if (i == 0) {
+                            ui->comboBoxWork->setCurrentText(acgAliasList.at(i));
+                            ACGName = acgAliasList.at(i);
+                            bFoundACG = true;
+                        }
+                    }
+                } else
+                    return;
+            } else { // Character
+                QStringList acgFieldList;
+                QStringList acgAliasList;
+                QStringList charFieldList;
+                QStringList charAliasList;
+
+                if (m_ACGDB->QueryCharacter(itemChar->text(0),
+                                        charAliasList, acgAliasList,
+                                        charFieldList, acgFieldList)) {
+                    if (!bFoundACG) {
+                        for (int i = 0; i < acgAliasList.count() && !acgAliasList.at(i).isEmpty(); i++) {
+                            output += QString("\"%1\" ").arg(acgAliasList.at(i));
+                            if (i == 0) {
+                                ui->comboBoxWork->setCurrentText(acgAliasList.at(i));
+                                ACGName = acgAliasList.at(i);
+                                bFoundACG = true;
+                            }
+                        }
+                    }
+
+                    for (int i = 1; i < charAliasList.count() && !charAliasList.at(i).isEmpty(); i++) {
+                        if (bFoundACG && ACGName != acgAliasList.at(0)) {
+                                continue;
+                        }
+
+                        charOutput += QString("\"%1\" ").arg(charAliasList.at(i));
+                        if (i == 1)
+                            ui->comboBoxChar->setCurrentText(charAliasList.at(i));
+                    }
+                } else
+                    return;
+            }
         }
     }
 }
