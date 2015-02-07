@@ -738,20 +738,27 @@ void ACGTagGenerator::on_pushButton_clicked()
     QString charOutput = "";
 
     //GetActivityOutputByXML(output);
-    GetActivityOutputByDB(output);
+    if (ui->checkBoxActivity->isChecked())
+        GetActivityOutputByDB(output);
 
-    if (itemPlace != NULL) {
+    if (ui->checkBoxLocation->isChecked() && itemPlace != NULL) {
         QDomNode targetNode;
         findTargetNode(m_dom, "LocationTags", itemPlace->text(0), targetNode);
         traverseParent(targetNode, output);
     }
 
     //GetACGCharOutputByXML(output);
-    GetACGCharOutputByDB(output, charOutput);
+    if (ui->checkBoxACG->isChecked())
+        GetACGCharOutputByDB(output, charOutput);
 
-    for (int i = 0; i < m_commonTagList.count(); i++) {
-        output.append("\"" + m_commonTagList[i] + "\" ");
+    if (ui->checkBoxCommon->isChecked()) {
+        for (int i = 0; i < m_commonTagList.count(); i++) {
+            output.append("\"" + m_commonTagList[i] + "\" ");
+        }
     }
+
+    output.append(ui->lineEditOtherTags->text());
+
     ui->plainTextEdit->setPlainText(output);
     ui->plainTextEdit_2->setPlainText(charOutput);
 }
@@ -765,6 +772,7 @@ void ACGTagGenerator::on_pushButtonClear_clicked()
 {
     ui->plainTextEdit->clear();
     ui->plainTextEdit_2->clear();
+    ui->lineEditOtherTags->clear();
 }
 
 void ACGTagGenerator::on_spinBox_editingFinished()
@@ -1832,4 +1840,9 @@ void ACGTagGenerator::on_pushButtonReset_clicked()
     ui->treeWidgetWork->setCurrentItem(NULL);
     ui->spinBox->setValue(-1);
     on_pushButtonClear_clicked();
+}
+
+void ACGTagGenerator::on_lineEditOtherTags_returnPressed()
+{
+    on_pushButton_clicked();
 }
