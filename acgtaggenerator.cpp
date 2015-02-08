@@ -1337,7 +1337,7 @@ bool CACGDB::IsACGExist(const QString &name, int& acgID)
     bool ret;
 
     for (int i = 0; i < 10; i++) {
-        condition += QString("NAME%1 = \"%2\"").arg(i).arg(name);
+        condition += QString("NAME%1 LIKE \"%2\"").arg(i).arg(name);
         if (i < 9)
             condition += " OR ";
     }
@@ -1360,7 +1360,7 @@ bool CACGDB::IsActivityExist(const QString &name, int &id)
     bool ret;
 
     for (int i = 0; i < 5; i++) {
-        condition += QString("NAME%1 = \"%2\"").arg(i).arg(name);
+        condition += QString("NAME%1 LIKE \"%2\"").arg(i).arg(name);
         if (i < 4)
             condition += " OR ";
     }
@@ -1433,6 +1433,41 @@ bool CACGDB::QueryAllCharacterList(QStringList &charList)
         for (int r = 0; requester.next(); r++) {
             for (int c = 0; c < rec.count(); c++) {
                 charList.push_back(requester.value(c).toString());
+            }
+        }
+    }
+
+    return ret;
+}
+
+bool CACGDB::QueryACG(int acgID, QStringList &aliasList, QStringList &fieldList)
+{
+    QString queryACGFields;
+    QString queryConditions;
+    QString sqlCmd;
+    QSqlQuery requester;
+    bool ret;
+
+    for (int i = 0; i < 10; i ++) {
+        queryACGFields += QString("%1").arg(QString("NAME%1").arg(i));
+
+        if (i < 9) {
+            queryACGFields += ", ";
+        }
+    }
+
+    queryConditions = QString("ID = ").arg(acgID);
+
+    sqlCmd = QString("SELECT %1 FROM %2 WHERE %3").arg(queryACGFields).arg(m_acgTableName).arg(queryConditions);
+    if (ret = QueryDB(sqlCmd, requester)) {
+        QSqlRecord rec = requester.record();
+        for (int c = 0; c < rec.count(); c++) {
+                fieldList.push_back(rec.fieldName(c));
+        }
+
+        for (int r = 0; requester.next(); r++) {
+            for (int c = 0; c < rec.count(); c++) {
+                aliasList.push_back(requester.value(c).toString());
             }
         }
     }
@@ -1628,7 +1663,7 @@ bool CACGDB::IsCharacterExist(const QString &name, QString &queryResult)
     bool ret;
 
     for (int i = 0; i < 10; i++) {
-        condition += QString("NAME%1 = \"%2\"").arg(i).arg(name);
+        condition += QString("NAME%1 LIKE \"%2\"").arg(i).arg(name);
         if (i < 9)
             condition += " OR ";
     }
@@ -1915,6 +1950,8 @@ bool  ACGTagGenerator::UpdateActivityComboBoxByDB()
         }
     } else
         return false;
+
+    return true;
 }
 
 void ACGTagGenerator::on_comboBoxActivity_currentTextChanged(const QString &arg1)
@@ -1923,4 +1960,48 @@ void ACGTagGenerator::on_comboBoxActivity_currentTextChanged(const QString &arg1
     if (!this->UpdateActivityComboBoxByDB())
         if (!arg1.isEmpty())
              ui->tableWidgetActivity->setItem(0, 0, new QTableWidgetItem(arg1));
+}
+
+void ACGTagGenerator::on_toolButtonSearch_clicked()
+{
+    QList<QTreeWidgetItem*> items;
+    Qt::MatchFlags matchFlags;
+    if (ui->radioButtonWildcard->isChecked()) {
+        matchFlags = Qt::MatchWildcard | Qt::MatchRecursive;
+    } else if (ui->radioButtonContains->isChecked()) {
+        matchFlags = Qt::MatchContains | Qt::MatchRecursive;
+    } else {
+        matchFlags = Qt::MatchFixedString | Qt::MatchRecursive;
+    }
+
+    if (!ui->checkBoxCaseSensitive->isChecked())
+        matchFlags |= Qt::MatchCaseSensitive;
+
+    items = ui->treeWidgetWork->findItems(QString("%1").arg(ui->lineEditSearch->text()), matchFlags);
+    if (items.empty())
+        return;
+
+    QList<QModelIndex> indexList;
+    for (int i = 0; i < items.count(); i++) {
+        ui->treeWidgetWork->setCurrentItem(items.at(i));
+        indexList.push_back(ui->treeWidgetWork->currentIndex());
+    }
+
+    QItemSelectionModel* sel_model = ui->treeWidgetWork->selectionModel();
+    for (int i = 0; i < indexList.count(); i ++) {
+        sel_model->select(indexList.at(i), QItemSelectionModel::Select);
+    }
+}
+
+void ACGTagGenerator::on_lineEditSearch_textEdited(const QString &arg1)
+{
+    if (!arg1.isEmpty())
+        ui->toolButtonSearch->setEnabled(true);
+    else
+        ui->toolButtonSearch->setDisabled(true);
+}
+
+void ACGTagGenerator::on_lineEditSearch_returnPressed()
+{
+    on_toolButtonSearch_clicked();
 }

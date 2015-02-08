@@ -104,6 +104,7 @@ public:
 
     bool IsACGExist(const QString &name, int &acgID);
     bool QueryACG(const QString& name, QStringList &aliasList, QStringList &fieldList);
+    bool QueryACG(int acgID, QStringList &aliasList, QStringList &fieldList);
     bool AddACG(QStringList& aliasList);
     bool RemoveACG(const QString& name);
     bool ModifyACG(QStringList& aliasList);
@@ -175,6 +176,9 @@ private slots:
     void on_pushButtonReset_clicked();
     void on_lineEditOtherTags_returnPressed();
     void on_comboBoxActivity_currentTextChanged(const QString &arg1);
+    void on_toolButtonSearch_clicked();
+    void on_lineEditSearch_textEdited(const QString &arg1);
+    void on_lineEditSearch_returnPressed();
 };
 
 #endif // ACGTAGGENERATOR_H

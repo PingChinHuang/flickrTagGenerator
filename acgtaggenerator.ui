@@ -602,6 +602,9 @@
           <layout class="QHBoxLayout" name="horizontalLayout_10">
            <item>
             <widget class="QLabel" name="labelLocation">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -621,6 +624,9 @@
            </item>
            <item>
             <widget class="QComboBox" name="comboBoxLocation">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -648,6 +654,9 @@
          </item>
          <item>
           <widget class="QTableWidget" name="tableWidgetLocation">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="minimumSize">
             <size>
              <width>132</width>
@@ -676,7 +685,7 @@
             <bool>false</bool>
            </property>
            <property name="rowCount">
-            <number>10</number>
+            <number>5</number>
            </property>
            <property name="columnCount">
             <number>1</number>
@@ -705,11 +714,6 @@
            <attribute name="verticalHeaderMinimumSectionSize">
             <number>15</number>
            </attribute>
-           <row/>
-           <row/>
-           <row/>
-           <row/>
-           <row/>
            <row/>
            <row/>
            <row/>
@@ -783,7 +787,7 @@
      <x>590</x>
      <y>220</y>
      <width>221</width>
-     <height>341</height>
+     <height>191</height>
     </rect>
    </property>
    <property name="title">
@@ -934,14 +938,120 @@
     </widget>
    </widget>
   </widget>
+  <widget class="QGroupBox" name="groupBox_5">
+   <property name="geometry">
+    <rect>
+     <x>590</x>
+     <y>469</y>
+     <width>211</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>搜尋</string>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>201</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_13">
+     <item>
+      <widget class="QLineEdit" name="lineEditSearch"/>
+     </item>
+     <item>
+      <widget class="QToolButton" name="toolButtonSearch">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>20</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>50</y>
+      <width>186</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QRadioButton" name="radioButtonFixedString">
+       <property name="text">
+        <string>完全相符</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="0" column="1" colspan="2">
+      <widget class="QRadioButton" name="radioButtonContains">
+       <property name="text">
+        <string>包含字串</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QRadioButton" name="radioButtonWildcard">
+       <property name="text">
+        <string>使用萬用字元</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QCheckBox" name="checkBoxCaseSensitive">
+       <property name="text">
+        <string>忽略大小寫</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
   <zorder>layoutWidget</zorder>
   <zorder>groupBox</zorder>
   <zorder>layoutWidget</zorder>
   <zorder>treeWidgetWork</zorder>
   <zorder>groupBox_2</zorder>
   <zorder>groupBoxConfig</zorder>
+  <zorder>groupBox_5</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>
