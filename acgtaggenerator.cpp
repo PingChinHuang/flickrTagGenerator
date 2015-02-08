@@ -227,6 +227,7 @@ void ACGTagGenerator::InitializeActivityTreeByDB()
     for (int i = 0; i < list.count(); i++) {
         QTreeWidgetItem *item = new QTreeWidgetItem(QStringList(list.at(i)));
         ui->treeWidgetActivity->addTopLevelItem(item);
+        ui->comboBoxActivity->addItem(list.at(i));
     }
 }
 
@@ -725,6 +726,9 @@ void ACGTagGenerator::GetActivityOutputByDB(QString &output)
                     output += QString("\"%1%2\" ").arg(aliasList.at(i)).arg(ui->spinBox->value());
                 else
                     output += QString("\"%1\" ").arg(aliasList.at(i));
+
+                if (i == 0)
+                    ui->comboBoxActivity->setCurrentText(aliasList.at(i));
             }
         } else
             return;
@@ -831,12 +835,18 @@ bool ACGTagGenerator::addWorkNameNode(QDomNode &targetNode)
 void ACGTagGenerator::on_pushButtonApply_clicked()
 {
     int acgID = ACGID_INVALID;
+    int activityID = -1;
     QString queryResult("");
     QMessageBox msgBox(QMessageBox::Warning,
                        "Error",
                        QString("Cannot update %1's contents.\n It's characters will not be handled.").arg(ui->comboBoxWork->currentText()),
                        QMessageBox::Ok,
                        NULL);
+    QMessageBox activityMsgBox(QMessageBox::Warning,
+                               "Error",
+                               QString("Cannot update %1's contents.\n").arg(ui->comboBoxActivity->currentText()),
+                               QMessageBox::Ok,
+                               NULL);
 
     if (ui->comboBoxWork->currentText().isEmpty())
         return;
@@ -912,6 +922,49 @@ void ACGTagGenerator::on_pushButtonApply_clicked()
         }
     } else
         goto query_char_db_failed;
+
+    if (ui->comboBoxActivity->currentText().isEmpty())
+        goto done;
+
+    if (m_ACGDB->IsActivityExist(ui->comboBoxActivity->currentText(), activityID)) {
+        QStringList aliasList;
+        bool hasActivity = false;
+
+        for (int i = 0; i < ui->tableWidgetActivity->rowCount(); i++) {
+            if (NULL != ui->tableWidgetActivity->item(i, 0)) {
+                hasActivity = true;
+                aliasList.push_back(ui->tableWidgetActivity->item(i, 0)->text());
+            } else
+                aliasList.push_back("");
+        }
+
+        if (!hasActivity)
+            goto done;
+
+        if (activityID <= -1) {
+            if (m_ACGDB->AddActivity(aliasList)) {
+                activityID = -1;
+                if (m_ACGDB->IsActivityExist(aliasList.at(0), activityID)) {
+                    if (activityID == -1) {
+                        goto query_activity_db_failed;
+                    }
+                }
+            } else {
+                goto query_activity_db_failed;
+            }
+        } else {
+            if (!m_ACGDB->ModifyActivity(aliasList)) {
+                goto query_activity_db_failed;
+            }
+        }
+    } else
+        goto query_activity_db_failed;
+
+    InitializeActivityTreeByDB();
+    goto done;
+
+query_activity_db_failed:
+        activityMsgBox.exec();
 
 done:
 
@@ -1845,4 +1898,28 @@ void ACGTagGenerator::on_pushButtonReset_clicked()
 void ACGTagGenerator::on_lineEditOtherTags_returnPressed()
 {
     on_pushButton_clicked();
+}
+
+bool  ACGTagGenerator::UpdateActivityComboBoxByDB()
+{
+    QStringList aliasList;
+    QStringList fieldList;
+    if (m_ACGDB->QueryActivity(ui->comboBoxActivity->currentText(), aliasList, fieldList)) {
+        if (aliasList.isEmpty())
+            return false;
+
+        int rowCounter = 0;
+        for (int i = 0; i < aliasList.count(); i++) {
+            ui->tableWidgetActivity->setItem(rowCounter++, 0, new QTableWidgetItem(aliasList.at(i)));
+        }
+    } else
+        return false;
+}
+
+void ACGTagGenerator::on_comboBoxActivity_currentTextChanged(const QString &arg1)
+{
+    ui->tableWidgetActivity->clear();
+    if (!this->UpdateActivityComboBoxByDB())
+        if (!arg1.isEmpty())
+             ui->tableWidgetChar->setItem(0, 0, new QTableWidgetItem(arg1));
 }

@@ -141,6 +141,7 @@ public:
     void InitializeByDB();
     bool UpdateWorkCharComboBox(bool bWork = true);
     bool UpdateWorkCharComboBoxByDB(bool bWork = true);
+    bool UpdateActivityComboBoxByDB();
     bool findTargetNode(QDomDocument &dom, const QString &tag, const QString &targetTag, QDomNode &targetNode);
     void traverseParent(QDomNode &targetNode, QString &output);
     bool createNewCharNode(QDomNode &newChar);
@@ -173,6 +174,7 @@ private slots:
     void on_actionTriggered();
     void on_pushButtonReset_clicked();
     void on_lineEditOtherTags_returnPressed();
+    void on_comboBoxActivity_currentTextChanged(const QString &arg1);
 };
 
 #endif // ACGTAGGENERATOR_H
