@@ -179,6 +179,7 @@ private slots:
     void on_toolButtonSearch_clicked();
     void on_lineEditSearch_textEdited(const QString &arg1);
     void on_lineEditSearch_returnPressed();
+    void on_checkBoxSwitchToggle(bool checked);
 };
 
 #endif // ACGTAGGENERATOR_H

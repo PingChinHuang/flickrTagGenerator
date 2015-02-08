@@ -35,6 +35,15 @@ ACGTagGenerator::ACGTagGenerator(QWidget *parent) :
             this, SLOT(on_itemSelectionChanged()));
     connect(ui->treeWidgetWork, SIGNAL(itemSelectionChanged()),
             this, SLOT(on_itemSelectionChanged()));
+
+    connect(ui->checkBoxACG, SIGNAL(toggled(bool)),
+            this, SLOT(on_checkBoxSwitchToggle(bool)));
+    connect(ui->checkBoxActivity, SIGNAL(toggled(bool)),
+            this, SLOT(on_checkBoxSwitchToggle(bool)));
+    connect(ui->checkBoxCommon, SIGNAL(toggled(bool)),
+            this, SLOT(on_checkBoxSwitchToggle(bool)));
+    connect(ui->checkBoxLocation, SIGNAL(toggled(bool)),
+            this, SLOT(on_checkBoxSwitchToggle(bool)));
 }
 
 ACGTagGenerator::~ACGTagGenerator()
@@ -777,6 +786,7 @@ void ACGTagGenerator::on_pushButtonClear_clicked()
     ui->plainTextEdit->clear();
     ui->plainTextEdit_2->clear();
     ui->lineEditOtherTags->clear();
+    ui->lineEditSearch->clear();
 }
 
 void ACGTagGenerator::on_spinBox_editingFinished()
@@ -2004,4 +2014,9 @@ void ACGTagGenerator::on_lineEditSearch_textEdited(const QString &arg1)
 void ACGTagGenerator::on_lineEditSearch_returnPressed()
 {
     on_toolButtonSearch_clicked();
+}
+
+void ACGTagGenerator::on_checkBoxSwitchToggle(bool checked)
+{
+    on_pushButton_clicked();
 }

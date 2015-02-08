@@ -943,7 +943,7 @@
     <rect>
      <x>590</x>
      <y>469</y>
-     <width>211</width>
+     <width>221</width>
      <height>91</height>
     </rect>
    </property>
@@ -1003,7 +1003,7 @@
         <bool>true</bool>
        </property>
        <attribute name="buttonGroup">
-        <string notr="true">buttonGroup</string>
+        <string notr="true">buttonGroupSearch</string>
        </attribute>
       </widget>
      </item>
@@ -1013,7 +1013,7 @@
         <string>包含字串</string>
        </property>
        <attribute name="buttonGroup">
-        <string notr="true">buttonGroup</string>
+        <string notr="true">buttonGroupSearch</string>
        </attribute>
       </widget>
      </item>
@@ -1023,7 +1023,7 @@
         <string>使用萬用字元</string>
        </property>
        <attribute name="buttonGroup">
-        <string notr="true">buttonGroup</string>
+        <string notr="true">buttonGroupSearch</string>
        </attribute>
       </widget>
      </item>
@@ -1052,6 +1052,6 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroupSearch"/>
  </buttongroups>
 </ui>
