@@ -1736,6 +1736,7 @@ bool CACGDB::ModifyActivity(QStringList &aliasList)
     QString setFields;
     QString condition;
 
+    qDebug() << QString("%1").arg(aliasList.count());
     for (int i = 0; i < aliasList.count() && i < 5; i++) {
         setFields += QString("NAME%1 = \"%2\"").arg(i).arg(aliasList.at(i));
         condition += QString("NAME%1 = \"%2\"").arg(i).arg(aliasList.at(0));
@@ -1921,5 +1922,5 @@ void ACGTagGenerator::on_comboBoxActivity_currentTextChanged(const QString &arg1
     ui->tableWidgetActivity->clear();
     if (!this->UpdateActivityComboBoxByDB())
         if (!arg1.isEmpty())
-             ui->tableWidgetChar->setItem(0, 0, new QTableWidgetItem(arg1));
+             ui->tableWidgetActivity->setItem(0, 0, new QTableWidgetItem(arg1));
 }

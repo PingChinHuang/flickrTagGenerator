@@ -213,7 +213,7 @@
    <property name="flat">
     <bool>true</bool>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -557,7 +557,7 @@
             <bool>false</bool>
            </property>
            <property name="rowCount">
-            <number>10</number>
+            <number>5</number>
            </property>
            <property name="columnCount">
             <number>1</number>
@@ -586,11 +586,6 @@
            <attribute name="verticalHeaderMinimumSectionSize">
             <number>15</number>
            </attribute>
-           <row/>
-           <row/>
-           <row/>
-           <row/>
-           <row/>
            <row/>
            <row/>
            <row/>
@@ -809,7 +804,7 @@
     <property name="title">
      <string>標籤開關</string>
     </property>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -874,7 +869,7 @@
     <property name="title">
      <string> 其他</string>
     </property>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -937,10 +932,6 @@
       </item>
      </layout>
     </widget>
-    <zorder></zorder>
-    <zorder>label</zorder>
-    <zorder>lineEditOtherTags</zorder>
-    <zorder>labelOtherTags</zorder>
    </widget>
   </widget>
   <zorder>layoutWidget</zorder>
