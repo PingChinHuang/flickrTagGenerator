@@ -58,15 +58,91 @@ public:
     bool QueryDB(const QString& query, QSqlQuery &requester);
 };
 
-/*class CWorkDB: public CDBControl {
-public:
-    explicit CWorkDB(const QString& dbFilePath);
-    virtual ~CWorkDB();
+class CTableBase {
+protected:
+    CDBControl *m_dbCtrl;
+    QList<ForeignKeyDefinition> m_fkDef; // Set during creating the table
+    QString m_name;
+    QString m_pkName; // Set during creating the table
 
-    bool CreateWorkTable();
-    bool QueryWork(const QString& name, QStringList& aliasList);
-    bool AddWork(QStringList& aliasList);
-};*/
+public:
+    explicit CTableControl();
+    explicit CTableControl(const QString &name);
+    ~CTableControl();
+
+    virtual bool SetDBControl(CDBControl *dbCtrl);
+    virtual bool SetTableName(const QString &name);
+    virtual QString GetTableName();
+
+    virtual bool CreateTable(DBTableDefinition &definition);
+
+    //virtual bool IsRowExist(const QString &data, int &id);
+    virtual bool IsDataExist(const QString &data, QString &result /* out */);
+
+    virtual bool QueryFields(QStringList &fieldList /* out */);
+    virtual bool QueryPrimaryColumn(QStringList &dataList /* out */);
+    virtual bool QueryData(const QString &data, QStringList &dataList /* out */);
+
+    virtual bool InsertRow(QStringList &dataList);
+    virtual bool RemoveRow(const QString &data);
+    virtual bool ModifyRow(QStringList &dataList);
+
+};
+
+class CLV2TableControl: public CTableControl {
+private:
+
+
+protected:
+    virtual bool CreateTable();
+
+public:
+    explicit CLV2TableControl();
+    explicit CLV2TableControl(const QString &name);
+    virtual ~CLV2TableControl();
+
+};
+
+class CLV3TableControl: public CTableControl {
+private:
+    QString m_lv2Name;
+
+protected:
+    virtual bool CreateTable();
+
+public:
+    explicit CLV3TableControl();
+    explicit CLV3TableControl(const QString &name);
+    virtual ~CLV3TableControl();
+
+    virtual bool IsTargetExist(const QString &target, QString &result);
+    virtual bool QueryTaget(const QString &target,
+                            QStringList &aliasList, QStringList &parentAliasList,
+                            QStringList &fieldList, QStringList &parentFieldList);
+    virtual bool AddTarget(int parentId, QStringList& aliasList);
+    virtual bool ModifyTarget(int parentID, QStringList& aliasList);
+
+
+};
+
+class CLocationDBManager {
+private:
+    CTableControl m_country;
+    CLV2TableControl m_city;
+    CLV3TableControl m_location;
+
+    bool m_hasLocationTable;
+    bool m_hasContryTable;
+    bool m_hasCityTable;
+
+private:
+    explicit CLocationDBManager();
+
+public:
+    explicit CLocationDBManager(CDBControl *dbCtrl);
+    ~CLocationDB();
+
+};
 
 class CACGDB : public CDBControl {
 private:

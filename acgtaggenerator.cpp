@@ -2020,3 +2020,76 @@ void ACGTagGenerator::on_checkBoxSwitchToggle(bool checked)
 {
     on_pushButton_clicked();
 }
+
+bool CTableControl::SetTableName(const QString &name)
+{
+    m_name = name;
+    return CreateTable();
+}
+
+bool CTableControl::CreateTable()
+{
+    //QMutexLocker _l(&m_isWorkableLock);
+    //if (!m_isWorkable)
+    //    return false;
+
+    if (NULL == m_dbCtrl)
+        return false;
+
+    struct DBTableDefinition definition;
+
+    definition.fieldNames.push_back("ID");
+    definition.fieldTypes.push_back("INTEGER");
+    definition.fieldForeign.push_back(false);
+    definition.fieldUnique.push_back(false);
+    definition.fieldPrimary = 0;
+    for (int i = 0; i < 10; i++) {
+        definition.fieldNames.push_back(QString("NAME%1").arg(i));
+        definition.fieldTypes.push_back("TEXT");
+        if (i == 0)
+            definition.fieldUnique.push_back(true);
+        else
+            definition.fieldUnique.push_back(false);
+        definition.fieldForeign.push_back(false);
+    }
+
+    return m_dbCtrl->CreateTable(m_name, definition);
+}
+
+bool CLV2TableControl::CreateTable()
+{
+
+}
+
+bool CLV3TableControl::CreateTable()
+{
+    //QMutexLocker _l(&m_isWorkableLock);
+    //if (!m_isWorkable)
+    //    return false;
+
+    if (NULL == m_dbCtrl)
+        return false;
+
+    struct DBTableDefinition definition;
+    struct ForeignKeyDefinition fkDefinition;
+
+    definition.fieldNames.push_back("ACG");
+    definition.fieldTypes.push_back("INTEGER");
+    definition.fieldForeign.push_back(true);
+    definition.fieldUnique.push_back(false);
+    fkDefinition.refDB = m_acgTableName;
+    fkDefinition.refField = "ID";
+    definition.fieldForeignDefinition.push_back(fkDefinition);
+    definition.fieldPrimary = 1; //Name0
+    fkDefinition.refDB = "";
+    fkDefinition.refField = "";
+    for (int i = 0; i < 10; i++) {
+        definition.fieldNames.push_back(QString("NAME%1").arg(i));
+        definition.fieldTypes.push_back("TEXT");
+        definition.fieldUnique.push_back(false);
+        definition.fieldForeign.push_back(false);
+        definition.fieldForeignDefinition.push_back(fkDefinition);
+    }
+
+    return m_dbCtrl->CreateTable(m_name, definition);
+}
